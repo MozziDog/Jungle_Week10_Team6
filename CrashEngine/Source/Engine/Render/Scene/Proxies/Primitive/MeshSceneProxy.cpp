@@ -133,10 +133,9 @@ std::unique_ptr<FMaterialConstantBuffer> FMeshSceneProxy::BuildMeshMaterialCB(co
     }
 
     auto Buffer = std::make_unique<FMaterialConstantBuffer>();
-    Buffer->Init(Device, sizeof(FStaticMeshMaterialViewCBData), ECBSlot::PerShader0);
+    Buffer->Init(Device, sizeof(FMeshMaterialViewCBData), ECBSlot::PerShader0);
 
-	// TODO: Rename FStaticMeshmaterialViewCBData
-    FStaticMeshMaterialViewCBData Constants;
+    FMeshMaterialViewCBData Constants;
     Constants.SectionColor  = GetVector4OrDefault(Material, MaterialSemantics::SectionColorParameter, MaterialSemantics::GetDefaultSectionColor());
     Constants.MaterialParam = FVector4(
         GetScalarOrDefault(Material, MaterialSemantics::SpecularPowerParameter, MaterialSemantics::DefaultSpecularPower),
