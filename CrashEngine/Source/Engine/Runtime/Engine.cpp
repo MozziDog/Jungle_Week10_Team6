@@ -7,7 +7,9 @@
 #include "Profiling/Stats.h"
 #include "Engine/Input/InputSystem.h"
 #include "Engine/Runtime/WindowsWindow.h"
-#include "Resource/ResourceManager.h"
+#include "Resource/FontManager.h"
+#include "Resource/SpriteVfxManager.h"
+#include "Resource/TextureManager.h"
 #include "Component/CameraComponent.h"
 #include "Render/Resources/Buffers/MeshBufferManager.h"
 #include "Sound/SoundManager.h"
@@ -124,8 +126,8 @@ void UEngine::Init(FWindowsWindow* InWindow)
 
 	ViewportInputRouter.SetOwnerWindow(Window->GetHWND());
 
-    uint32 InitWidth = Window->GetWidth();
-    uint32 InitHeight = Window->GetHeight();
+    uint32 InitWidth = static_cast<uint32>(Window->GetWidth());
+    uint32 InitHeight = static_cast<uint32>(Window->GetHeight());
 
 #if !WITH_EDITOR
     // Game.ini 로드 (해상도 설정 등 - Standalone 전용)
@@ -164,12 +166,25 @@ void UEngine::Init(FWindowsWindow* InWindow)
     FMeshBufferManager::Get().Initialize(Device);
 
     // 에셋 자동 스캔 (스탠드얼론 대응)
-    FObjManager::ScanMeshAssets();
-    FObjManager::ScanObjSourceFiles();
+    FObjManager::Get().SetDevice(Device);
+    FMaterialManager::Get().SetDevice(Device);
+    FObjManager::Get().ScanMeshAssets();
+    FObjManager::Get().ScanObjSourceFiles();
     FMaterialManager::Get().ScanMaterialAssets();
     UE_LOG(Engine, Info, "Asset registries scanned for runtime.");
 
-    FResourceManager::Get().LoadFromFile(FPaths::ToUtf8(FPaths::ResourceFilePath()), Device);
+    // 리소스 매니저 초기화 및 에셋 스캔
+    FTextureManager::Get().SetDevice(Device);
+    FTextureManager::Get().ScanAssets();
+
+    FFontManager::Get().SetDevice(Device);
+    FFontManager::Get().ScanAssets();
+    FFontManager::Get().LoadGPUResources(Device);
+
+    FSpriteVfxManager::Get().SetDevice(Device);
+    FSpriteVfxManager::Get().ScanAssets();
+    FSpriteVfxManager::Get().LoadGPUResources(Device);
+
     UE_LOG(Engine, Info, "Runtime engine initialization completed.");
 
     if (!FSoundManager::Get().Initialize())
@@ -191,9 +206,11 @@ void UEngine::Shutdown()
         delete VP;
     }
 
-    FResourceManager::Get().ReleaseGPUResources();
+    FFontManager::Get().ReleaseGPUResources();
+    FSpriteVfxManager::Get().ReleaseGPUResources();
+    FTextureManager::Get().ReleaseGPUResources();
     UTexture2D::ReleaseAllGPU();
-    FObjManager::ReleaseAllGPU();
+    FObjManager::Get().ReleaseAllGPU();
     FMeshBufferManager::Get().Release();
     Renderer.Release();
 
