@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Component/SkinnedMeshComponent.h"
+#include "Render/RHI/D3D11/Buffers/SkeletalMeshBuffer.h"
 
 class USkeletalMeshComponent : public USkinnedMeshComponent
 {
