@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Render/Scene/Proxies/Primitive/PrimitiveProxy.h"
 #include "Materials/MaterialCore.h"
+#include "Materials/Material.h"
 #include <memory>
 
 // TODO: Delete StaticMeshSceneProxy once the class type UMeshComponent is ready
@@ -42,11 +43,11 @@ protected:
     uint32                                           LODCount = 1;
 
 
-	bool SectionMaterialLess(const FMeshSectionRenderData& A, const FMeshSectionRenderData& B);
-    bool TryGetTextureSRV(UMaterial* Material, std::initializer_list<const char*> SlotNames, ID3D11ShaderResourceView*& OutSRV);
-	float GetScalarOrDefault(const UMaterial* Material, const char* ParamName, float DefaultValue);
-    FVector4 GetVector4OrDefault(const UMaterial* Material, const char* ParamName, const FVector4& DefaultValue);
-    std::unique_ptr<FMaterialConstantBuffer> BuildStaticMeshMaterialCB(const UMaterial* Material, ID3D11Device* Device, ID3D11DeviceContext* Context,
+	static bool SectionMaterialLess(const FMeshSectionRenderData& A, const FMeshSectionRenderData& B);
+    static bool TryGetTextureSRV(UMaterial* Material, std::initializer_list<const char*> SlotNames, ID3D11ShaderResourceView*& OutSRV);
+	static float GetScalarOrDefault(const UMaterial* Material, const char* ParamName, float DefaultValue);
+    static FVector4 GetVector4OrDefault(const UMaterial* Material, const char* ParamName, const FVector4& DefaultValue);
+    static std::unique_ptr<FMaterialConstantBuffer> BuildStaticMeshMaterialCB(const UMaterial* Material, ID3D11Device* Device, ID3D11DeviceContext* Context,
                                                                        ID3D11ShaderResourceView* DiffuseSRV, ID3D11ShaderResourceView* NormalSRV,
                                                                        ID3D11ShaderResourceView* SpecularSRV);
     void SortSectionRenderDataByMaterial(TArray<FMeshSectionRenderData>& Draws);
