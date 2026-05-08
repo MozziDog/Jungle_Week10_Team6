@@ -22,7 +22,7 @@ public:
 
 
 protected:
-	//UMeshComponent* GetMeshComponent() const;
+	virtual ~FMeshSceneProxy() = default;
     virtual UMeshComponent* GetMeshComponent() const = 0;
 
 	// LOD does not affect skeletal mesh for now
