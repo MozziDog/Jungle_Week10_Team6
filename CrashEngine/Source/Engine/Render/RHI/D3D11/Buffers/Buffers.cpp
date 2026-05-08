@@ -27,6 +27,17 @@ void FMeshBuffer::Release()
     IndexBuffer.Release();
 }
 
+void FSkeletalMeshBuffer::UpdateVertex(ID3D11DeviceContext* Context, const void* Data, uint32 Count)
+{
+    VertexBuffer.Update(Context, Data, Count);
+}
+
+void FSkeletalMeshBuffer::Release()
+{
+	VertexBuffer.Release();
+	IndexBuffer.Release();
+}
+
 FVertexBuffer::FVertexBuffer(FVertexBuffer&& Other) noexcept
     : Buffer(Other.Buffer), VertexCount(Other.VertexCount), Stride(Other.Stride)
 {
@@ -385,3 +396,4 @@ void FDynamicIndexBuffer::Bind(ID3D11DeviceContext* Context)
 {
     Context->IASetIndexBuffer(Buffer, DXGI_FORMAT_R32_UINT, 0);
 }
+

@@ -27,7 +27,7 @@ public:
 
 		uint32 VertexCount     = static_cast<uint32>(InMeshData.Vertices.size());
         uint32 VertexByteWidth = VertexCount * sizeof(VertexType);
-        VertexBuffer.Create(InDevice, InMeshData.Vertices.data(), VertexCount, sizeof(VertexType));
+        VertexBuffer.Create(InDevice, InMeshData.Vertices.data(), VertexCount, VertexByteWidth, sizeof(VertexType));
 
         if (!InMeshData.Indices.empty())
         {
