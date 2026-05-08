@@ -919,6 +919,7 @@
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Buffers\DynamicVertexBuffer.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Buffers\IndexBuffer.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Buffers\MeshBuffer.h" />
+    <ClInclude Include="Source\Engine\Render\RHI\D3D11\Buffers\SkeletalMeshBuffer.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Buffers\VertexBuffer.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Buffers\VertexTypes.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Common\D3D11API.h" />

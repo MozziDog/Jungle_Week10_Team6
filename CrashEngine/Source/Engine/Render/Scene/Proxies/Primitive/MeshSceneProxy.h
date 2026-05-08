@@ -3,6 +3,8 @@
 #include "Materials/MaterialCore.h"
 #include <memory>
 
+// TODO: Delete StaticMeshSceneProxy once the class type UMeshComponent is ready
+
 class UMeshComponent;
 class UStaticMeshComponent;
 
@@ -10,7 +12,7 @@ class FMeshSceneProxy : public FPrimitiveProxy {
 public:
     static constexpr uint32 MAX_LOD = 4;
 
-	// Swithc to UMeshComponent when the class type is ready
+	// Switch to UMeshComponent when the class type is ready
     // FMeshSceneProxy(UMeshComponent* InComponent);
     FMeshSceneProxy(UStaticMeshComponent* InComponent);
 

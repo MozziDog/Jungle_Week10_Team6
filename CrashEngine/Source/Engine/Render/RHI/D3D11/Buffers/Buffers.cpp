@@ -243,6 +243,39 @@ void FDynamicVertexBuffer::Create(ID3D11Device* InDevice, uint32 InMaxCount, uin
     InDevice->CreateBuffer(&Desc, nullptr, &Buffer);
 }
 
+void FDynamicVertexBuffer::Create(ID3D11Device* InDevice, const void* InData, uint32 InVertexCount, uint32 InByteWidth, uint32 InStride) 
+{
+	Release();
+
+	if (!InData || InByteWidth == 0)
+    {
+        MaxCount	= 0;
+        Stride      = InStride;
+        return;
+    }
+
+    D3D11_BUFFER_DESC Desc = {};
+    Desc.ByteWidth         = InByteWidth;
+    Desc.Usage             = D3D11_USAGE_DYNAMIC;
+    Desc.BindFlags         = D3D11_BIND_VERTEX_BUFFER;
+	Desc.CPUAccessFlags	   = D3D11_CPU_ACCESS_WRITE;
+
+    D3D11_SUBRESOURCE_DATA Data = { InData };
+    HRESULT                hr   = InDevice->CreateBuffer(&Desc, &Data, &Buffer);
+    if (FAILED(hr))
+    {
+        BufferDebugLog("[DynamicVertexBuffer] CreateBuffer failed hr=0x%08X vertexCount=%u byteWidth=%u stride=%u device=%p data=%p",
+                       static_cast<unsigned>(hr), InVertexCount, InByteWidth, InStride, InDevice, InData);
+        MaxCount	= 0;
+        Stride      = InStride;
+        return;
+    }
+
+    MaxCount    = InVertexCount;
+    Stride      = InStride;
+    MemoryStats::AddVertexBufferMemory(InByteWidth);
+}
+
 void FDynamicVertexBuffer::Release()
 {
     if (Buffer)
