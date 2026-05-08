@@ -9,4 +9,5 @@ public:
     USkeletalMeshComponent() = default;
 
 	FPrimitiveProxy* CreateSceneProxy() override;
+    FSkeletalMeshBuffer* GetMeshBuffer() const override;
 };

@@ -8,3 +8,14 @@ FPrimitiveProxy* USkeletalMeshComponent::CreateSceneProxy()
 {
     return new FSkeletalMeshSceneProxy(this);
 }
+
+FSkeletalMeshBuffer* USkeletalMeshComponent::GetMeshBuffer() const 
+{
+    //if (!SkeletalMesh)
+    //    return nullptr;
+    //FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
+    //if (!Asset || !Asset->RenderBuffer)
+    //    return nullptr;
+    //return Asset->RenderBuffer.get();
+	return nullptr;	// Placeholder
+}
