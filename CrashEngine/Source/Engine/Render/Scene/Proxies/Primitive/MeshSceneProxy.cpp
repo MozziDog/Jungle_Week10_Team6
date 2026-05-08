@@ -19,7 +19,7 @@ FMeshSceneProxy::FMeshSceneProxy(UMeshComponent* InComponent)
     : FPrimitiveProxy(InComponent) 
 {
     bAllowViewModeShaderOverride = true;
-    UpdateShadow();
+    //UpdateShadow();
 }
 
 void FMeshSceneProxy::UpdateMaterial()
