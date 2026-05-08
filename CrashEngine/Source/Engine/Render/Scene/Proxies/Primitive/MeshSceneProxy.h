@@ -11,8 +11,6 @@ class FMeshSceneProxy : public FPrimitiveProxy {
 public:
     static constexpr uint32 MAX_LOD = 4;
 
-	// Switch to UMeshComponent when the class type is ready
-    // FMeshSceneProxy(UMeshComponent* InComponent);
     FMeshSceneProxy(UMeshComponent* InComponent);
 
     virtual void UpdateMaterial() override;
@@ -25,7 +23,6 @@ protected:
 	virtual ~FMeshSceneProxy() = default;
     virtual UMeshComponent* GetMeshComponent() const = 0;
 
-	// LOD does not affect skeletal mesh for now
     // 모든 LOD의 SectionRenderData 재구축
     virtual void RebuildSectionRenderData() = 0;
 
@@ -53,5 +50,4 @@ protected:
 
 protected:
 	UMeshComponent* MeshComponent = nullptr;
-
 };
