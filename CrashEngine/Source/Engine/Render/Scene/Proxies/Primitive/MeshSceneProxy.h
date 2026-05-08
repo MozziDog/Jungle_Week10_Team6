@@ -1,0 +1,56 @@
+﻿#pragma once
+#include "Render/Scene/Proxies/Primitive/PrimitiveProxy.h"
+#include "Materials/MaterialCore.h"
+#include <memory>
+
+class UMeshComponent;
+class UStaticMeshComponent;
+
+class FMeshSceneProxy : public FPrimitiveProxy {
+public:
+    static constexpr uint32 MAX_LOD = 4;
+
+	// Swithc to UMeshComponent when the class type is ready
+    // FMeshSceneProxy(UMeshComponent* InComponent);
+    FMeshSceneProxy(UStaticMeshComponent* InComponent);
+
+    virtual void UpdateMaterial() override;
+    virtual void UpdateMesh() override;
+    virtual void UpdateShadow() override;
+    virtual void UpdateLOD(uint32 LODLevel) override;
+
+
+protected:
+	//UMeshComponent* GetMeshComponent() const;
+    UStaticMeshComponent* GetStaticMeshComponent() const;
+
+    // 모든 LOD의 SectionRenderData 재구축
+    virtual void RebuildSectionRenderData();
+
+    // FLODDrawData는 렌더 처리에 필요한 데이터를 묶는 구조체입니다.
+    struct FLODDrawData
+    {
+        FMeshBuffer*                                     MeshBuffer = nullptr;
+        TArray<FMeshSectionRenderData>                   SectionRenderData;
+        TArray<std::unique_ptr<FMaterialConstantBuffer>> OwnedMaterialCBs;
+    };
+
+    FLODDrawData                                     LODData[MAX_LOD];
+    TArray<std::unique_ptr<FMaterialConstantBuffer>> ActiveOwnedMaterialCBs;
+    uint32                                           LODCount = 1;
+
+
+	bool SectionMaterialLess(const FMeshSectionRenderData& A, const FMeshSectionRenderData& B);
+    bool TryGetTextureSRV(UMaterial* Material, std::initializer_list<const char*> SlotNames, ID3D11ShaderResourceView*& OutSRV);
+	float GetScalarOrDefault(const UMaterial* Material, const char* ParamName, float DefaultValue);
+    FVector4 GetVector4OrDefault(const UMaterial* Material, const char* ParamName, const FVector4& DefaultValue);
+    std::unique_ptr<FMaterialConstantBuffer> BuildStaticMeshMaterialCB(const UMaterial* Material, ID3D11Device* Device, ID3D11DeviceContext* Context,
+                                                                       ID3D11ShaderResourceView* DiffuseSRV, ID3D11ShaderResourceView* NormalSRV,
+                                                                       ID3D11ShaderResourceView* SpecularSRV);
+    void SortSectionRenderDataByMaterial(TArray<FMeshSectionRenderData>& Draws);
+
+protected:
+	// UMeshComponent* MeshComponent = nullptr;
+	UStaticMeshComponent* MeshComponent = nullptr;
+
+};
