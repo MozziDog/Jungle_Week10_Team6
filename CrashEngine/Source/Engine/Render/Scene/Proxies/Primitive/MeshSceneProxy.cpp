@@ -37,12 +37,6 @@ void FMeshSceneProxy::UpdateMesh()
     RebuildSectionRenderData();
 }
 
-void FMeshSceneProxy::UpdateShadow()
-{
-    //UMeshComponent* StaticMesh = GetMeshComponent();
-    //bCastShadow                = StaticMesh ? StaticMesh->ShouldCastShadow() : true;
-}
-
 bool FMeshSceneProxy::SectionMaterialLess(const FMeshSectionRenderData& A, const FMeshSectionRenderData& B) 
 {
     const uintptr_t ACB0 = reinterpret_cast<uintptr_t>(A.MaterialCB[0]);

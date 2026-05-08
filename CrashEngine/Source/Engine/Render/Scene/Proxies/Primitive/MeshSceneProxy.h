@@ -13,9 +13,9 @@ public:
 
     FMeshSceneProxy(UMeshComponent* InComponent);
 
-    virtual void UpdateMaterial() override;
-    virtual void UpdateMesh() override;
-    virtual void UpdateShadow() override;
+    virtual void UpdateMaterial()			override;
+    virtual void UpdateMesh()				override;
+    virtual void UpdateShadow()				override = 0;
     virtual void UpdateLOD(uint32 LODLevel) override = 0;
 
 
