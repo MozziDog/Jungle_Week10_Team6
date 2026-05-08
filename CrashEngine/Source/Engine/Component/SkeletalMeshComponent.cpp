@@ -11,6 +11,8 @@ FPrimitiveProxy* USkeletalMeshComponent::CreateSceneProxy()
 
 FSkeletalMeshBuffer* USkeletalMeshComponent::GetMeshBuffer() const 
 {
+	// Un-comment once the SkeletalMesh class is ready
+
     //if (!SkeletalMesh)
     //    return nullptr;
     //FSkeletalMesh* Asset = SkeletalMesh->GetSkeletalMeshAsset();
