@@ -548,6 +548,7 @@
     <ClCompile Include="Source\Engine\Render\RHI\D3D11\State\DepthStencilStateManager.cpp" />
     <ClCompile Include="Source\Engine\Render\RHI\D3D11\State\RasterizerStateManager.cpp" />
     <ClCompile Include="Source\Engine\Render\Scene\Proxies\Primitive\MeshSceneProxy.cpp" />
+    <ClCompile Include="Source\Engine\Render\Scene\Proxies\Primitive\SkeletalMeshSceneProxy.cpp" />
     <ClCompile Include="Source\Engine\Render\Scene\Scene.cpp" />
     <ClCompile Include="Source\Engine\Render\Scene\Debug\DebugPrimitiveQueue.cpp" />
     <ClCompile Include="Source\Engine\Render\Scene\Debug\DebugRenderAPI.cpp" />
@@ -936,6 +937,7 @@
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\State\RasterizerStateManager.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Textures\SurfaceTexture.h" />
     <ClInclude Include="Source\Engine\Render\Scene\Proxies\Primitive\MeshSceneProxy.h" />
+    <ClInclude Include="Source\Engine\Render\Scene\Proxies\Primitive\SkeletalMeshSceneProxy.h" />
     <ClInclude Include="Source\Engine\Render\Scene\Scene.h" />
     <ClInclude Include="Source\Engine\Render\Scene\SceneProxyDirtyFlag.h" />
     <ClInclude Include="Source\Engine\Render\Scene\SceneProxyRegistry.h" />

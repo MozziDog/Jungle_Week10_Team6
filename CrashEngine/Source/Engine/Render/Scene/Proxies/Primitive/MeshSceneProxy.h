@@ -4,8 +4,6 @@
 #include "Materials/Material.h"
 #include <memory>
 
-// TODO: Delete StaticMeshSceneProxy once the class type UMeshComponent is ready
-
 class UMeshComponent;
 class UStaticMeshComponent;
 
@@ -15,25 +13,26 @@ public:
 
 	// Switch to UMeshComponent when the class type is ready
     // FMeshSceneProxy(UMeshComponent* InComponent);
-    FMeshSceneProxy(UStaticMeshComponent* InComponent);
+    FMeshSceneProxy(UMeshComponent* InComponent);
 
     virtual void UpdateMaterial() override;
     virtual void UpdateMesh() override;
     virtual void UpdateShadow() override;
-    virtual void UpdateLOD(uint32 LODLevel) override;
+    virtual void UpdateLOD(uint32 LODLevel) override = 0;
 
 
 protected:
 	//UMeshComponent* GetMeshComponent() const;
-    UStaticMeshComponent* GetStaticMeshComponent() const;
+    virtual UMeshComponent* GetMeshComponent() const = 0;
 
+	// LOD does not affect skeletal mesh for now
     // 모든 LOD의 SectionRenderData 재구축
-    virtual void RebuildSectionRenderData();
+    virtual void RebuildSectionRenderData() = 0;
 
     // FLODDrawData는 렌더 처리에 필요한 데이터를 묶는 구조체입니다.
     struct FLODDrawData
     {
-        FMeshBuffer*                                           MeshBuffer = nullptr;
+        FMeshBuffer*                                     MeshBuffer = nullptr;
         TArray<FMeshSectionRenderData>                   SectionRenderData;
         TArray<std::unique_ptr<FMaterialConstantBuffer>> OwnedMaterialCBs;
     };
@@ -47,13 +46,12 @@ protected:
     static bool TryGetTextureSRV(UMaterial* Material, std::initializer_list<const char*> SlotNames, ID3D11ShaderResourceView*& OutSRV);
 	static float GetScalarOrDefault(const UMaterial* Material, const char* ParamName, float DefaultValue);
     static FVector4 GetVector4OrDefault(const UMaterial* Material, const char* ParamName, const FVector4& DefaultValue);
-    static std::unique_ptr<FMaterialConstantBuffer> BuildStaticMeshMaterialCB(const UMaterial* Material, ID3D11Device* Device, ID3D11DeviceContext* Context,
+    static std::unique_ptr<FMaterialConstantBuffer> BuildMeshMaterialCB(const UMaterial* Material, ID3D11Device* Device, ID3D11DeviceContext* Context,
                                                                        ID3D11ShaderResourceView* DiffuseSRV, ID3D11ShaderResourceView* NormalSRV,
                                                                        ID3D11ShaderResourceView* SpecularSRV);
     void SortSectionRenderDataByMaterial(TArray<FMeshSectionRenderData>& Draws);
 
 protected:
-	// UMeshComponent* MeshComponent = nullptr;
-	UStaticMeshComponent* MeshComponent = nullptr;
+	UMeshComponent* MeshComponent = nullptr;
 
 };

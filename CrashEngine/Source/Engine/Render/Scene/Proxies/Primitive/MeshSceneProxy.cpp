@@ -15,29 +15,12 @@
 #include <initializer_list>
 #include <memory>
 
-FMeshSceneProxy::FMeshSceneProxy(UStaticMeshComponent* InComponent)
+FMeshSceneProxy::FMeshSceneProxy(UMeshComponent* InComponent)
     : FPrimitiveProxy(InComponent) 
 {
     bAllowViewModeShaderOverride = true;
     UpdateShadow();
 }
-
-//FMeshSceneProxy::FMeshSceneProxy(UMeshComponent* InComponent)
-//    : FPrimitiveProxy(InComponent)
-//{
-//    bAllowViewModeShaderOverride = true;
-//    UpdateShadow();
-//}
-
-UStaticMeshComponent* FMeshSceneProxy::GetStaticMeshComponent() const
-{
-    return static_cast<UStaticMeshComponent*>(Owner);
-}
-
-//UMeshComponent* FMeshSceneProxy::GetMeshComponent() const
-//{
-//    return static_cast<UStaticMeshComponent*>(Owner);
-//}
 
 void FMeshSceneProxy::UpdateMaterial()
 {
@@ -47,7 +30,7 @@ void FMeshSceneProxy::UpdateMaterial()
 void FMeshSceneProxy::UpdateMesh()
 {
     MeshBuffer = Owner->GetMeshBuffer();
-    // Static mesh shading is selected by the active render pass/view mode registry.
+    // Mesh shading is selected by the active render pass/view mode registry.
     Shader = nullptr;
     Pass   = ERenderPass::Opaque;
 
@@ -56,212 +39,9 @@ void FMeshSceneProxy::UpdateMesh()
 
 void FMeshSceneProxy::UpdateShadow()
 {
-    UStaticMeshComponent* StaticMesh = GetStaticMeshComponent();
-    bCastShadow                      = StaticMesh ? StaticMesh->ShouldCastShadow() : true;
+    //UMeshComponent* StaticMesh = GetMeshComponent();
+    //bCastShadow                = StaticMesh ? StaticMesh->ShouldCastShadow() : true;
 }
-
-//void FMeshSceneProxy::UpdateShadow()
-//{
-//    UMeshComponent* Mesh = GetMeshComponent();
-//    bCastShadow          = Mesh ? Mesh->ShouldCastShadow() : true;
-//}
-
-// TODO: Fix MeshBuffer so that it is also compatiable with dynamic VB for Skeletal Mesh
-void FMeshSceneProxy::UpdateLOD(uint32 LODLevel)
-{
-    if (LODLevel >= LODCount)
-        LODLevel = LODCount - 1;
-    if (LODLevel == CurrentLOD)
-        return;
-
-    std::swap(MeshBuffer, LODData[CurrentLOD].MeshBuffer);
-    std::swap(SectionRenderData, LODData[CurrentLOD].SectionRenderData);
-    std::swap(ActiveOwnedMaterialCBs, LODData[CurrentLOD].OwnedMaterialCBs);
-
-    CurrentLOD = LODLevel;
-    std::swap(MeshBuffer, LODData[LODLevel].MeshBuffer);
-    std::swap(SectionRenderData, LODData[LODLevel].SectionRenderData);
-    std::swap(ActiveOwnedMaterialCBs, LODData[LODLevel].OwnedMaterialCBs);
-}
-
-// Rebuilds the render-ready draw metadata for every section of every LOD in a UStaticMeshComponent.
-void FMeshSceneProxy::RebuildSectionRenderData()
-{
-    UStaticMeshComponent* SMC  = GetStaticMeshComponent();
-    UStaticMesh*          Mesh = SMC->GetStaticMesh();
-    if (!Mesh || !Mesh->GetStaticMeshAsset())
-    {
-        for (uint32 lod = 0; lod < MAX_LOD; ++lod)
-        {
-            LODData[lod].MeshBuffer = nullptr;
-            LODData[lod].SectionRenderData.clear();
-            LODData[lod].OwnedMaterialCBs.clear();
-        }
-
-        LODCount   = 1;
-        CurrentLOD = 0;
-        MeshBuffer = nullptr;
-        SectionRenderData.clear();
-        ActiveOwnedMaterialCBs.clear();
-        return;
-    }
-
-    ID3D11Device*        Device  = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
-    ID3D11DeviceContext* Context = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext() : nullptr;
-
-    const auto& Slots     = Mesh->GetStaticMaterials();
-    const auto& Overrides = SMC->GetOverrideMaterials();
-    LODCount              = Mesh->GetLODCount();
-
-    for (uint32 lod = 0; lod < LODCount; ++lod)
-    {
-        const auto& Sections    = Mesh->GetLODSections(lod);
-        LODData[lod].MeshBuffer = Mesh->GetLODMeshBuffer(lod);
-        LODData[lod].SectionRenderData.clear();
-        LODData[lod].OwnedMaterialCBs.clear();
-        LODData[lod].SectionRenderData.reserve(Sections.size());
-        LODData[lod].OwnedMaterialCBs.reserve(Sections.size());
-
-        for (const FStaticMeshSection& Section : Sections)
-        {
-            FMeshSectionRenderData Draw;
-            Draw.FirstIndex    = Section.FirstIndex;
-            Draw.IndexCount    = Section.NumTriangles * 3;
-            Draw.Blend         = EBlendState::Opaque;
-            Draw.DepthStencil  = EDepthStencilState::Default;
-            Draw.Rasterizer    = ERasterizerState::SolidBackCull;
-            Draw.MaterialCB[0] = nullptr;
-            Draw.MaterialCB[1] = nullptr;
-
-            UMaterial*  Mat           = nullptr;
-            const int32 MaterialIndex = Section.MaterialIndex;
-            if (MaterialIndex >= 0 && MaterialIndex < static_cast<int32>(Slots.size()))
-            {
-                if (MaterialIndex < static_cast<int32>(Overrides.size()) && Overrides[MaterialIndex])
-                {
-                    Mat = Overrides[MaterialIndex];
-                }
-                else if (Slots[MaterialIndex].MaterialInterface)
-                {
-                    Mat = Slots[MaterialIndex].MaterialInterface;
-                }
-            }
-
-            if (Mat)
-            {
-                TryGetTextureSRV(Mat, { MaterialSemantics::DiffuseTextureSlot, "BaseColorTexture", "AlbedoTexture", "BaseTexture", "DiffuseMap" }, Draw.DiffuseSRV);
-                TryGetTextureSRV(Mat, { MaterialSemantics::NormalTextureSlot, "NormalMap", "NormalMapTexture", "BumpTexture", "BumpMap" }, Draw.NormalSRV);
-                TryGetTextureSRV(Mat, { MaterialSemantics::SpecularTextureSlot, "SpecularMap", "SpecularMapTexture", "SpecularMask", "SpecularMaskTexture", "GlossMap" }, Draw.SpecularSRV);
-            }
-
-            auto MaterialCB = BuildStaticMeshMaterialCB(Mat, Device, Context, Draw.DiffuseSRV, Draw.NormalSRV, Draw.SpecularSRV);
-            if (MaterialCB)
-            {
-                Draw.MaterialCB[0] = MaterialCB->GetConstantBuffer();
-                LODData[lod].OwnedMaterialCBs.push_back(std::move(MaterialCB));
-            }
-
-            LODData[lod].SectionRenderData.push_back(Draw);
-        }
-
-        SortSectionRenderDataByMaterial(LODData[lod].SectionRenderData);
-    }
-
-    CurrentLOD = 0;
-    std::swap(MeshBuffer, LODData[0].MeshBuffer);
-    std::swap(SectionRenderData, LODData[0].SectionRenderData);
-    std::swap(ActiveOwnedMaterialCBs, LODData[0].OwnedMaterialCBs);
-}
-
-// Rebuilds the render-ready draw metadata for every section of every LOD in a UMeshComponent.
-//void FMeshSceneProxy::RebuildSectionRenderData()
-//{
-//    UMeshComponent* MC  = GetMeshComponent();
-//    UStaticMesh*          Mesh = MC->GetMesh();
-//    if (!Mesh || !Mesh->GetMeshAsset())
-//    {
-//        for (uint32 lod = 0; lod < MAX_LOD; ++lod)
-//        {
-//            LODData[lod].MeshBuffer = nullptr;
-//            LODData[lod].SectionRenderData.clear();
-//            LODData[lod].OwnedMaterialCBs.clear();
-//        }
-//
-//        LODCount   = 1;
-//        CurrentLOD = 0;
-//        MeshBuffer = nullptr;
-//        SectionRenderData.clear();
-//        ActiveOwnedMaterialCBs.clear();
-//        return;
-//    }
-//
-//    ID3D11Device*        Device  = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
-//    ID3D11DeviceContext* Context = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext() : nullptr;
-//
-//    const auto& Slots     = Mesh->GetStaticMaterials();
-//    const auto& Overrides = MC->GetOverrideMaterials();
-//    LODCount              = Mesh->GetLODCount();
-//
-//    for (uint32 lod = 0; lod < LODCount; ++lod)
-//    {
-//        const auto& Sections    = Mesh->GetLODSections(lod);
-//        LODData[lod].MeshBuffer = Mesh->GetLODMeshBuffer(lod);
-//        LODData[lod].SectionRenderData.clear();
-//        LODData[lod].OwnedMaterialCBs.clear();
-//        LODData[lod].SectionRenderData.reserve(Sections.size());
-//        LODData[lod].OwnedMaterialCBs.reserve(Sections.size());
-//
-//        for (const FStaticMeshSection& Section : Sections)
-//        {
-//            FMeshSectionRenderData Draw;
-//            Draw.FirstIndex    = Section.FirstIndex;
-//            Draw.IndexCount    = Section.NumTriangles * 3;
-//            Draw.Blend         = EBlendState::Opaque;
-//            Draw.DepthStencil  = EDepthStencilState::Default;
-//            Draw.Rasterizer    = ERasterizerState::SolidBackCull;
-//            Draw.MaterialCB[0] = nullptr;
-//            Draw.MaterialCB[1] = nullptr;
-//
-//            UMaterial*  Mat           = nullptr;
-//            const int32 MaterialIndex = Section.MaterialIndex;
-//            if (MaterialIndex >= 0 && MaterialIndex < static_cast<int32>(Slots.size()))
-//            {
-//                if (MaterialIndex < static_cast<int32>(Overrides.size()) && Overrides[MaterialIndex])
-//                {
-//                    Mat = Overrides[MaterialIndex];
-//                }
-//                else if (Slots[MaterialIndex].MaterialInterface)
-//                {
-//                    Mat = Slots[MaterialIndex].MaterialInterface;
-//                }
-//            }
-//
-//            if (Mat)
-//            {
-//                TryGetTextureSRV(Mat, { MaterialSemantics::DiffuseTextureSlot, "BaseColorTexture", "AlbedoTexture", "BaseTexture", "DiffuseMap" }, Draw.DiffuseSRV);
-//                TryGetTextureSRV(Mat, { MaterialSemantics::NormalTextureSlot, "NormalMap", "NormalMapTexture", "BumpTexture", "BumpMap" }, Draw.NormalSRV);
-//                TryGetTextureSRV(Mat, { MaterialSemantics::SpecularTextureSlot, "SpecularMap", "SpecularMapTexture", "SpecularMask", "SpecularMaskTexture", "GlossMap" }, Draw.SpecularSRV);
-//            }
-//
-//            auto MaterialCB = BuildStaticMeshMaterialCB(Mat, Device, Context, Draw.DiffuseSRV, Draw.NormalSRV, Draw.SpecularSRV);
-//            if (MaterialCB)
-//            {
-//                Draw.MaterialCB[0] = MaterialCB->GetConstantBuffer();
-//                LODData[lod].OwnedMaterialCBs.push_back(std::move(MaterialCB));
-//            }
-//
-//            LODData[lod].SectionRenderData.push_back(Draw);
-//        }
-//
-//        SortSectionRenderDataByMaterial(LODData[lod].SectionRenderData);
-//    }
-//
-//    CurrentLOD = 0;
-//    std::swap(MeshBuffer, LODData[0].MeshBuffer);
-//    std::swap(SectionRenderData, LODData[0].SectionRenderData);
-//    std::swap(ActiveOwnedMaterialCBs, LODData[0].OwnedMaterialCBs);
-//}
-
 
 bool FMeshSceneProxy::SectionMaterialLess(const FMeshSectionRenderData& A, const FMeshSectionRenderData& B) 
 {
@@ -349,7 +129,7 @@ FVector4 FMeshSceneProxy::GetVector4OrDefault(const UMaterial* Material, const c
     return Material->GetVector4Parameter(ParamName, Value) ? Value : DefaultValue;
 }
 
-std::unique_ptr<FMaterialConstantBuffer> FMeshSceneProxy::BuildStaticMeshMaterialCB(const UMaterial* Material, ID3D11Device* Device, ID3D11DeviceContext* Context,
+std::unique_ptr<FMaterialConstantBuffer> FMeshSceneProxy::BuildMeshMaterialCB(const UMaterial* Material, ID3D11Device* Device, ID3D11DeviceContext* Context,
                                                                    ID3D11ShaderResourceView* DiffuseSRV, ID3D11ShaderResourceView* NormalSRV,
                                                                    ID3D11ShaderResourceView* SpecularSRV)
 {
@@ -361,6 +141,7 @@ std::unique_ptr<FMaterialConstantBuffer> FMeshSceneProxy::BuildStaticMeshMateria
     auto Buffer = std::make_unique<FMaterialConstantBuffer>();
     Buffer->Init(Device, sizeof(FStaticMeshMaterialViewCBData), ECBSlot::PerShader0);
 
+	// TODO: Rename FStaticMeshmaterialViewCBData
     FStaticMeshMaterialViewCBData Constants;
     Constants.SectionColor  = GetVector4OrDefault(Material, MaterialSemantics::SectionColorParameter, MaterialSemantics::GetDefaultSectionColor());
     Constants.MaterialParam = FVector4(
