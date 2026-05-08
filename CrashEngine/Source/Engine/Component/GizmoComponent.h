@@ -73,7 +73,7 @@ public:
     // UActorComponent Override
     void Deactivate() override;
 
-    FMeshBuffer* GetMeshBuffer() const override;
+    FStaticMeshBuffer* GetMeshBuffer() const override;
     FMeshDataView GetMeshDataView() const override { return MeshData ? FMeshDataView::FromMeshData(*MeshData) : FMeshDataView{}; }
     FPrimitiveProxy* CreateSceneProxy() override;
     void CreateRenderState() override;

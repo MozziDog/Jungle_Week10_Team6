@@ -306,7 +306,7 @@ void FObjManager::ReleaseAllGPU()
 
         for (uint32 LOD = 1; LOD < UStaticMesh::MAX_LOD_COUNT; ++LOD)
         {
-            FMeshBuffer* LODBuffer = Mesh->GetLODMeshBuffer(LOD);
+            FStaticMeshBuffer* LODBuffer = Mesh->GetLODMeshBuffer(LOD);
             if (LODBuffer)
             {
                 LODBuffer->Release();

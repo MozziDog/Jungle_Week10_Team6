@@ -21,7 +21,7 @@ void BufferDebugLog(const char* Format, ...)
 }
 } // namespace
 
-void FMeshBuffer::Release()
+void FStaticMeshBuffer::Release()
 {
     VertexBuffer.Release();
     IndexBuffer.Release();

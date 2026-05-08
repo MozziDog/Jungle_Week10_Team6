@@ -28,7 +28,7 @@ private:
     // FLODDrawData는 렌더 처리에 필요한 데이터를 묶는 구조체입니다.
     struct FLODDrawData
     {
-        FMeshBuffer*                                     MeshBuffer = nullptr;
+        FStaticMeshBuffer*                                     MeshBuffer = nullptr;
         TArray<FMeshSectionRenderData>                   SectionRenderData;
         TArray<std::unique_ptr<FMaterialConstantBuffer>> OwnedMaterialCBs;
     };

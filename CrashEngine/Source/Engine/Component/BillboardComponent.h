@@ -53,7 +53,7 @@ public:
     */
     FMatrix ComputeBillboardMatrix(const FVector& CameraForward) const;
 
-    FMeshBuffer* GetMeshBuffer() const override { return &FMeshBufferManager::Get().GetMeshBuffer(EPrimitiveMeshShape::Quad); }
+    FStaticMeshBuffer* GetMeshBuffer() const override { return &FMeshBufferManager::Get().GetMeshBuffer(EPrimitiveMeshShape::Quad); }
     FMeshDataView GetMeshDataView() const override { return FMeshDataView::FromMeshData(FMeshBufferManager::Get().GetMeshData(EPrimitiveMeshShape::Quad)); }
     void UpdateWorldAABB() const override;
     bool LineTraceComponent(const FRay& Ray, FHitResult& OutHitResult) override;

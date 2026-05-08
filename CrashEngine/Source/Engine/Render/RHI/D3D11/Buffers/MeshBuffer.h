@@ -6,15 +6,15 @@
 #include "Render/RHI/D3D11/Buffers/IndexBuffer.h"
 
 // FMeshBuffer는 GPU 버퍼 리소스의 생성과 바인딩을 관리합니다.
-class FMeshBuffer
+class FStaticMeshBuffer
 {
 public:
-    FMeshBuffer() = default;
-    ~FMeshBuffer() { Release(); }
-    FMeshBuffer(const FMeshBuffer&)            = delete;
-    FMeshBuffer& operator=(const FMeshBuffer&) = delete;
-    FMeshBuffer(FMeshBuffer&&)                 = default;
-    FMeshBuffer& operator=(FMeshBuffer&&)      = default;
+    FStaticMeshBuffer() = default;
+    ~FStaticMeshBuffer() { Release(); }
+    FStaticMeshBuffer(const FStaticMeshBuffer&)            = delete;
+    FStaticMeshBuffer& operator=(const FStaticMeshBuffer&) = delete;
+    FStaticMeshBuffer(FStaticMeshBuffer&&)                 = default;
+    FStaticMeshBuffer& operator=(FStaticMeshBuffer&&)      = default;
 
     template <typename VertexType>
     void Create(ID3D11Device* InDevice, const TMeshData<VertexType>& InMeshData)

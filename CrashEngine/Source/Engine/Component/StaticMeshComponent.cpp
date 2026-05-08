@@ -116,7 +116,7 @@ UMaterial* UStaticMeshComponent::GetMaterial(int32 ElementIndex) const
     return nullptr;
 }
 
-FMeshBuffer* UStaticMeshComponent::GetMeshBuffer() const
+FStaticMeshBuffer* UStaticMeshComponent::GetMeshBuffer() const
 {
     if (!StaticMesh)
         return nullptr;

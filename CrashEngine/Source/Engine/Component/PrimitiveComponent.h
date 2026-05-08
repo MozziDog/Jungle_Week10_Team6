@@ -15,7 +15,7 @@
 
 class FPrimitiveProxy;
 class FScene;
-class FMeshBuffer;
+class FStaticMeshBuffer;
 class FOctree;
 class UMaterial;
 
@@ -34,7 +34,7 @@ public:
 
     void Serialize(FArchive& Ar) override;
 
-    virtual FMeshBuffer* GetMeshBuffer() const { return nullptr; }
+    virtual FStaticMeshBuffer* GetMeshBuffer() const { return nullptr; }
     virtual FMeshDataView GetMeshDataView() const { return {}; }
 
     void SetVisibility(bool bNewVisible);

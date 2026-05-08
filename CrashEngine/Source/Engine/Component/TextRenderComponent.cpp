@@ -82,7 +82,7 @@ void UTextRenderComponent::SetText(const FString& InText)
     MarkWorldBoundsDirty();
 }
 
-FMeshBuffer* UTextRenderComponent::GetMeshBuffer() const
+FStaticMeshBuffer* UTextRenderComponent::GetMeshBuffer() const
 {
     return &FMeshBufferManager::Get().GetMeshBuffer(EPrimitiveMeshShape::Quad);
 }
