@@ -191,6 +191,7 @@ void FStaticMeshSceneProxy::UpdateLOD(uint32 LODLevel)
     std::swap(ActiveOwnedMaterialCBs, LODData[LODLevel].OwnedMaterialCBs);
 }
 
+// Rebuilds the render-ready draw metadata for every section of every LOD in a UStaticMeshComponent.
 void FStaticMeshSceneProxy::RebuildSectionRenderData()
 {
     UStaticMeshComponent* SMC  = GetStaticMeshComponent();
