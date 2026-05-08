@@ -13,7 +13,7 @@
 
 class UPrimitiveComponent;
 class FGraphicsProgram;
-class FStaticMeshBuffer;
+class FMeshBuffer;
 class FScene;
 struct FSceneView;
 
@@ -55,7 +55,7 @@ public:
     ERasterizerState   Rasterizer   = ERasterizerState::SolidBackCull;
 
     FGraphicsProgram* Shader             = nullptr;
-    FStaticMeshBuffer*      MeshBuffer         = nullptr;
+    FMeshBuffer*      MeshBuffer         = nullptr;
     FPerObjectCBData  PerObjectConstants = {};
     FBoundingBox      CachedBounds;
     mutable bool      bPerObjectCBDirty = true;

@@ -756,7 +756,7 @@ void UGizmoComponent::Deactivate()
     MarkAllGizmoDirty();
 }
 
-FStaticMeshBuffer* UGizmoComponent::GetMeshBuffer() const
+FMeshBuffer* UGizmoComponent::GetMeshBuffer() const
 {
     EPrimitiveMeshShape Shape = EPrimitiveMeshShape::TransGizmo;
     switch (CurMode)

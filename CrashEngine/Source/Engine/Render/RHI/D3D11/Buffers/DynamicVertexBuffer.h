@@ -16,11 +16,13 @@ public:
     bool                  Update(ID3D11DeviceContext* Context, const void* Data, uint32 Count);
     void                  Bind(ID3D11DeviceContext* Context, uint32 Slot = 0);
     uint32                GetMaxCount() const { return MaxCount; }
+    uint32                GetVertexCount() const { return VertexCount; }
     ID3D11Buffer*         GetBuffer() const { return Buffer; }
     uint32                GetStride() const { return Stride; }
 
 private:
     ID3D11Buffer* Buffer   = nullptr;
     uint32        MaxCount = 0;
+    uint32        VertexCount = 0;
     uint32        Stride   = 0;
 };

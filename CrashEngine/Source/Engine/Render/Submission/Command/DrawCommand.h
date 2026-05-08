@@ -7,7 +7,7 @@
 #include "Core/CoreTypes.h"
 
 class FGraphicsProgram;
-class FStaticMeshBuffer;
+class FMeshBuffer;
 class FConstantBuffer;
 struct ID3D11ShaderResourceView;
 struct ID3D11Buffer;
@@ -24,7 +24,7 @@ struct FDrawCommand
     uint8                    StencilRef   = 0;
 
     // ===== Geometry =====
-    FStaticMeshBuffer* MeshBuffer  = nullptr;
+    FMeshBuffer* MeshBuffer  = nullptr;
     uint32       FirstIndex  = 0;
     uint32       IndexCount  = 0;
     uint32       VertexCount = 0;
@@ -55,7 +55,7 @@ struct FDrawCommand
     static uint64 BuildSortKey(ERenderPass InPass,
                                uint8 InUserBits,
                                const FGraphicsProgram* InShader,
-                               const FStaticMeshBuffer* InMeshBuffer,
+                               const FMeshBuffer* InMeshBuffer,
                                uint32 InMaterialHash)
     {
         auto PtrHash16 = [](const void* Ptr) -> uint64

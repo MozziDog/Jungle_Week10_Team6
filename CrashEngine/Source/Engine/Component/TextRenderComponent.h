@@ -64,7 +64,7 @@ public:
 
     FPrimitiveProxy* CreateSceneProxy() override;
 
-    FStaticMeshBuffer* GetMeshBuffer() const override;
+    FMeshBuffer* GetMeshBuffer() const override;
     FMeshDataView GetMeshDataView() const override;
 
     void UpdateWorldAABB() const override;
