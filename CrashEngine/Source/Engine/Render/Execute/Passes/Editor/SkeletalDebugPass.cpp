@@ -8,5 +8,11 @@
 void FSkeletalDebugPass::PrepareInputs(FRenderPipelineContext& Context)
 {
 
+}
 
+void FSkeletalDebugPass::PrepareTargets(FRenderPipelineContext& Context)
+{
+	ID3D11RenderTargetView* RTV = Context.GetViewportRTV();
+	ID3D11DepthStencilView* DSV = Context.GetViewportDSV();
+	Context.Context->OMSetRenderTargets(1, &RTV, DSV);
 }
