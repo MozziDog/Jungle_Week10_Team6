@@ -19,5 +19,16 @@ void FSkeletalDebugPass::PrepareTargets(FRenderPipelineContext& Context)
 
 void FSkeletalDebugPass::BuildDrawCommands(FRenderPipelineContext& Context)
 {
-    DrawCommandBuild::BuildLineDrawCommand(Context, *Context.DrawCommandList);
+    DrawCommandBuild::BuildSkeletalDebugDrawCommand(Context, *Context.DrawCommandList);
+}
+
+void FSkeletalDebugPass::SubmitDrawCommands(FRenderPipelineContext& Context)
+{
+    if (Context.DrawCommandList)
+    {
+        uint32 s, e;
+        Context.DrawCommandList->GetPassRange(ERenderPass::SkeletalDebug, s, e);
+        if (s < e)
+            Context.DrawCommandList->SubmitRange(s, e, *Context.Device, Context.Context, *Context.StateCache);
+    }
 }

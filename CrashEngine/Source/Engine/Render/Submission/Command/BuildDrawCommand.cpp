@@ -436,7 +436,7 @@ void DrawCommandBuild::BuildLineDrawCommand(FRenderPipelineContext& Context, FDr
 
 void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Context, FDrawCommandList& OutList)
 {
-	
+	//Context.Submission.SceneData->Primitives.
 }
 
 void DrawCommandBuild::BuildOverlayBillboardDrawCommand(FRenderPipelineContext& Context, FDrawCommandList& OutList)
