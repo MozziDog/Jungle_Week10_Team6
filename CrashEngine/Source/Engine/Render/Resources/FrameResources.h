@@ -17,7 +17,6 @@ struct FFrameResources
 {
     FConstantBuffer FrameBuffer;
     FConstantBuffer PerObjectConstantBuffer;
-	FConstantBuffer PerBoneDebugConstantBuffer;
     FConstantBuffer GlobalLightBuffer;
     FConstantBuffer ShadowPassBuffer;
 
@@ -59,6 +58,7 @@ struct FFrameResources
 
     void             EnsurePerObjectCBPoolCapacity(ID3D11Device* Device, uint32 RequiredCount);
     FConstantBuffer* GetPerObjectCBForProxy(ID3D11Device* Device, const FPrimitiveProxy& Proxy);
+    void             EnsurePerBoneDebugCBCapacity(ID3D11Device* Device, uint32 RequiredCount);
     FConstantBuffer* AcquirePerBoneDebugCB(ID3D11Device* Device);
     void             EnsureTextCharInfoMap(const FFontResource* Resource);
 };

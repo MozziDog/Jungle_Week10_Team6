@@ -420,6 +420,9 @@
     <FxCompile Include="Shaders\Render\Editor\Primitive.hlsl">
       <Filter>Shaders\Render\Editor</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\Render\Editor\SkeletalDebug.hlsl">
+      <Filter>Shaders\Render\Editor</Filter>
+    </FxCompile>
     <FxCompile Include="Shaders\Render\Editor\ShaderBillboard.hlsl">
       <Filter>Shaders\Render\Editor</Filter>
     </FxCompile>

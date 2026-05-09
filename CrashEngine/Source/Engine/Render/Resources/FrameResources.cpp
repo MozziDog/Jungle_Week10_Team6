@@ -12,7 +12,6 @@ void FFrameResources::Create(ID3D11Device* InDevice)
 {
     FrameBuffer.Create(InDevice, sizeof(FFrameCBData));
     PerObjectConstantBuffer.Create(InDevice, sizeof(FPerObjectCBData));
-	PerBoneDebugConstantBuffer.Create(InDevice, sizeof(FPerObjectCBData));
     GlobalLightBuffer.Create(InDevice, sizeof(FGlobalLightCBData));
     ShadowPassBuffer.Create(InDevice, sizeof(FShadowPassCBData));
     TextBatch.Create(InDevice);
@@ -85,7 +84,6 @@ void FFrameResources::Release()
 
     FrameBuffer.Release();
     PerObjectConstantBuffer.Release();
-	PerBoneDebugConstantBuffer.Release();
     GlobalLightBuffer.Release();
     ShadowPassBuffer.Release();
 
@@ -363,17 +361,29 @@ FConstantBuffer* FFrameResources::GetPerObjectCBForProxy(ID3D11Device* Device, c
     return &PerObjectCBPool[Proxy.ProxyId];
 }
 
-FConstantBuffer* FFrameResources::AcquirePerBoneDebugCB(ID3D11Device* Device)
+void FFrameResources::EnsurePerBoneDebugCBCapacity(ID3D11Device* Device, uint32 RequiredCount)
 {
-    const size_t OldCount = BoneDebugCBCursor;
-    PerBoneDebugCBPool.resize(++BoneDebugCBCursor);
+    if (PerBoneDebugCBPool.size() >= RequiredCount)
+    {
+        return;
+    }
+
+    const size_t OldCount = PerBoneDebugCBPool.size();
+    PerBoneDebugCBPool.resize(RequiredCount);
 
     for (size_t Index = OldCount; Index < PerBoneDebugCBPool.size(); ++Index)
     {
         PerBoneDebugCBPool[Index].Create(Device, sizeof(FPerObjectCBData));
     }
+}
 
-    return &PerBoneDebugCBPool[OldCount];
+FConstantBuffer* FFrameResources::AcquirePerBoneDebugCB(ID3D11Device* Device)
+{
+    // Pre-reserve via EnsurePerBoneDebugCBCapacity before calling this in a loop.
+    // Growing the pool inside the loop dangles every elements returned earlier in the same frame.
+
+    EnsurePerBoneDebugCBCapacity(Device, BoneDebugCBCursor + 1);
+    return &PerBoneDebugCBPool[BoneDebugCBCursor++];
 }
 
 void FFrameResources::EnsureTextCharInfoMap(const FFontResource* Resource)
