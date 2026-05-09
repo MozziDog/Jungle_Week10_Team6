@@ -444,6 +444,10 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
 
 	if (const FGraphicsProgram* Shader = FShaderManager::Get().GetShader(EShaderType::Editor))
     {
+		// Retrieve and clear Skeleton line batch
+		FLineBatch& SkeletonLines = Context.Renderer->GetSkeletonLineBatch();
+		SkeletonLines.Clear();
+
         const FRenderPassDrawPreset& State    = Context.GetRenderPassDrawPreset(ERenderPass::EditorLines);
         auto AddBatch = [&](FLineBatch& Batch, const char* DebugName)
         {
@@ -469,14 +473,28 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
 
 		const auto& SkeletalDebugInstances = OverlayData->GetSkeletalDebugInstances();
 
+		// For each Skeletal mesh instance...
         for (const auto& Instance : SkeletalDebugInstances)
         {
-            // Draw Cone mesh Cmd
-			
+			for (uint32 i = 0; i < Instance.Bones.size(); i++) {
+                // ...Retrieve World Position
+                FVector WorldPos;
 
-            // Draw lines to parents Cmd
-			
+				// ...Draw Cone mesh Cmd
+				
+
+				// ...Draw lines to parents Cmd
+				if (Instance.Bones[i].ParentIndex != -1) 
+				{
+					// Retrieve Parent World Position
+                    FVector ParentWorldPos;
+
+					// Add line to batch (White, following the Unreal design)
+					SkeletonLines.AddLine(WorldPos, ParentWorldPos, FVector4(1, 1, 1, 1), FVector4(1, 1, 1, 1));
+				}
+			}
         }
+        AddBatch(SkeletonLines, "SkeletalDebugLines");
 	}
 }
 
