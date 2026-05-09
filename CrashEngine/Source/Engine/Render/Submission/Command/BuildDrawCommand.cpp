@@ -478,8 +478,9 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
         {
 			for (uint32 i = 0; i < Instance.Bones.size(); i++) {
 				auto& Bone = Instance.Bones[i];
-                // ...Retrieve World Position
+                // ...Retrieve World Transformation Info
                 FVector WorldPos = Bone.WorldMatrix.GetLocation();
+				FVector WorldRot = Bone.WorldMatrix.GetEuler();
 
 				// ...Draw Cone mesh Cmd
 				
