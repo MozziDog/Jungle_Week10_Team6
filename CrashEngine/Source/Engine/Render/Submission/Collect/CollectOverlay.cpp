@@ -53,6 +53,11 @@ void FDrawCollector::CollectOverlay(const FCollectOverlayContext& OverlayContext
     {
         CollectWorldBoundsDebug(*OverlayContext.WorldBoundsProxies, CollectedOverlayData);
     }
+
+	if (OverlayContext.WorldBoundsProxies && OverlayContext.SceneView && OverlayContext.SceneView->ShowFlags.bSkeletalDebug) 
+	{
+		CollectSkeletalDebug(*OverlayContext.WorldBoundsProxies, CollectedOverlayData);
+    }
 }
 
 void FDrawCollector::CollectGrid(float GridSpacing, int32 GridHalfLineCount)
