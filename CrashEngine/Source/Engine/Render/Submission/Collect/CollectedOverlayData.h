@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Engine/Render/Scene/Debug/SkeletalDebug.h"
+#include "Render/Scene/Debug/SkeletalDebug.h"
 
 class FPrimitiveProxy;
 
