@@ -588,6 +588,10 @@ void FRenderer::BuildDrawCommands(FRenderPipelineContext& PipelineContext)
     {
         Pass->BuildDrawCommands(PipelineContext);
     }
+    if (FRenderPass* Pass = PassRegistry.FindPass(ERenderPassNodeType::SkeletalDebugPass))
+    {
+		Pass->BuildDrawCommands(PipelineContext);
+	}
     if (FRenderPass* Pass = PassRegistry.FindPass(ERenderPassNodeType::DebugLinePass))
     {
         Pass->BuildDrawCommands(PipelineContext);
