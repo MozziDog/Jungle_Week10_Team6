@@ -16,7 +16,7 @@
 #include "GameFramework/AActor.h"
 
 // ==================== Public API ====================
-
+// Likely a dead code
 void FDrawCollector::CollectOverlay(const FCollectOverlayContext& OverlayContext)
 {
     CollectedSceneData.Primitives.OverlayTexts.clear();
