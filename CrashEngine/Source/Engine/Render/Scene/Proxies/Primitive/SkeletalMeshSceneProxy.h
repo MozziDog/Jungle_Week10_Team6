@@ -14,7 +14,4 @@ public:
 protected:
 	UMeshComponent* GetMeshComponent() const override;
     void RebuildSectionRenderData() override;
-
-private:
-	FSkeletalDebugInstance DebugInstance;
 };
