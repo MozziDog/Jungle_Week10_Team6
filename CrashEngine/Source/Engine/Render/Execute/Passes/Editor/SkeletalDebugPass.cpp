@@ -5,3 +5,8 @@
 #include "Render/Submission/Command/BuildDrawCommand.h"
 #include "Render/Scene/Proxies/Primitive/PrimitiveProxy.h"
 
+void FSkeletalDebugPass::PrepareInputs(FRenderPipelineContext& Context)
+{
+
+
+}
