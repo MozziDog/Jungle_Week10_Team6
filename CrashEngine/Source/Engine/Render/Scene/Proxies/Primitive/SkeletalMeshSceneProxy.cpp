@@ -23,7 +23,7 @@ void FSkeletalMeshSceneProxy::BuildSkeletalDebugInstance(FSkeletalDebugInstance&
     if (!Skinned)
         return;
 
-	// TODO
+	// TODO: Add ParentIndex once the concrete data type is set
     const int32 BoneCount = Skinned->GetNumBones();
     OutInstance.Bones.reserve(BoneCount);
 
