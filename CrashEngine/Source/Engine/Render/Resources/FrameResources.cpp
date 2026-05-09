@@ -80,6 +80,11 @@ void FFrameResources::Release()
         CB.Release();
     }
     PerObjectCBPool.clear();
+
+	for (FConstantBuffer& CB : PerBoneDebugCBPool)
+    {
+		CB.Release();
+	}
 	PerBoneDebugCBPool.clear();
 
     FrameBuffer.Release();
