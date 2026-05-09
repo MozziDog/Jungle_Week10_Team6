@@ -6,7 +6,7 @@
 #include "Editor/Subsystem/OverlayStatSystem.h"
 #include "Engine/Collision/Octree.h"
 #include "Render/Execute/Context/Scene/SceneView.h"
-#include "Render/Scene/Proxies/Primitive/PrimitiveProxy.h"
+#include "Render/Scene/Proxies/Primitive/SkeletalMeshSceneProxy.h"
 #include "Render/Scene/Scene.h"
 #include "Component/BillboardComponent.h"
 #include "Component/TextRenderComponent.h"
@@ -255,5 +255,20 @@ void FDrawCollector::CollectWorldBoundsDebug(const TArray<FPrimitiveProxy*>& Pro
         }
 
         OverlayData.Debug.AABBs.push_back({ Proxy->CachedBounds.Min, Proxy->CachedBounds.Max, FColor(255, 0, 255) });
+    }
+}
+
+void FDrawCollector::CollectSkeletalDebug(const TArray<FPrimitiveProxy*>& Proxies, FCollectedOverlayData& OverlayData)
+{
+    for (FPrimitiveProxy* Proxy : Proxies)
+    {
+        if (!Proxy) continue;
+		if (!Cast<USkeletalMeshComponent>(Proxy->Owner)) continue;
+        const FSkeletalMeshSceneProxy* SkeletalProxy = static_cast<const FSkeletalMeshSceneProxy*>(Proxy);
+		FSkeletalDebugInstance Instance = { };
+        SkeletalProxy->BuildSkeletalDebugInstance(Instance);
+
+		if (!Instance.Bones.empty()) 
+			OverlayData.Debug.SkeletalInstances.push_back(Instance);
     }
 }
