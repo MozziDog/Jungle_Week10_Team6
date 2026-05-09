@@ -10,6 +10,7 @@
 #include "Render/Scene/Scene.h"
 #include "Component/BillboardComponent.h"
 #include "Component/TextRenderComponent.h"
+#include "Component/SkeletalMeshComponent.h"
 #include "GameFramework/World.h"
 #include "Component/PrimitiveComponent.h"
 #include "GameFramework/AActor.h"

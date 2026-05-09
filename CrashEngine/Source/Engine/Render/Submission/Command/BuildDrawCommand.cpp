@@ -442,7 +442,42 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
         return;
     }
 
+	if (const FGraphicsProgram* Shader = FShaderManager::Get().GetShader(EShaderType::Editor))
+    {
+        const FRenderPassDrawPreset& State    = Context.GetRenderPassDrawPreset(ERenderPass::EditorLines);
+        auto AddBatch = [&](FLineBatch& Batch, const char* DebugName)
+        {
+            if (Batch.GetIndexCount() == 0 || !Batch.UploadBuffers(Context.Context))
+            {
+                return;
+            }
 
+            FDrawCommand& Cmd = OutList.AddCommand();
+            Cmd.Shader        = const_cast<FGraphicsProgram*>(Shader);
+            Cmd.DepthStencil  = State.DepthStencil;
+            Cmd.Blend         = State.Blend;
+            Cmd.Rasterizer    = ERasterizerState::SolidNoCull;
+            Cmd.Topology      = State.Topology;
+            Cmd.RawVB         = Batch.GetVBBuffer();
+            Cmd.RawVBStride   = Batch.GetVBStride();
+            Cmd.RawIB         = Batch.GetIBBuffer();
+            Cmd.IndexCount    = Batch.GetIndexCount();
+            Cmd.Pass          = ERenderPass::SkeletalDebug;
+            Cmd.DebugName     = DebugName;
+            Cmd.SortKey       = FDrawCommand::BuildSortKey(Cmd.Pass, 0, Cmd.Shader, nullptr, 0);
+        };
+
+		const auto& SkeletalDebugInstances = OverlayData->GetSkeletalDebugInstances();
+
+        for (const auto& Instance : SkeletalDebugInstances)
+        {
+            // Draw Cone mesh Cmd
+			
+
+            // Draw lines to parents Cmd
+			
+        }
+	}
 }
 
 void DrawCommandBuild::BuildOverlayBillboardDrawCommand(FRenderPipelineContext& Context, FDrawCommandList& OutList)
