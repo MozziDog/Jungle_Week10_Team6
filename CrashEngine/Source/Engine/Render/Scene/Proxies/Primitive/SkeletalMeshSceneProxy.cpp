@@ -28,8 +28,8 @@ UMeshComponent* FSkeletalMeshSceneProxy::GetMeshComponent() const
 }
 
 // TODO: Finish this stub once the class type rolls in
-//void FSkeletalMeshSceneProxy::RebuildSectionRenderData() 
-//{
+void FSkeletalMeshSceneProxy::RebuildSectionRenderData() 
+{
 //    USkinnedMeshComponent* SMC    = static_cast<USkinnedMeshComponent*>(GetMeshComponent());
 //    USkeletalMesh*         Mesh   = SMC->GetSkeletalMesh();
 //    if (!Mesh || !Mesh->GetSkeletalMeshAsset())

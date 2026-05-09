@@ -436,7 +436,13 @@ void DrawCommandBuild::BuildLineDrawCommand(FRenderPipelineContext& Context, FDr
 
 void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Context, FDrawCommandList& OutList)
 {
-	//Context.Submission.SceneData->Primitives.
+    const FCollectedOverlayData* OverlayData = Context.Submission.OverlayData;
+    if (!OverlayData)
+    {
+        return;
+    }
+
+
 }
 
 void DrawCommandBuild::BuildOverlayBillboardDrawCommand(FRenderPipelineContext& Context, FDrawCommandList& OutList)
