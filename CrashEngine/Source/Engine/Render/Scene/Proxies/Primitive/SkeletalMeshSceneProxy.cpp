@@ -16,6 +16,31 @@ FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(USkeletalMeshComponent* InCompo
 	UpdateShadow();
 }
 
+void FSkeletalMeshSceneProxy::BuildSkeletalDebugInstance(FSkeletalDebugInstance& OutInstance) const
+{
+	OutInstance.Bones.clear();
+    const USkinnedMeshComponent* Skinned = static_cast<const USkinnedMeshComponent*>(Owner);
+    if (!Skinned)
+        return;
+
+	// TODO
+    const int32 BoneCount = Skinned->GetNumBones();
+    OutInstance.Bones.reserve(BoneCount);
+
+    for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+    {
+        FSkeletalDebugBone Bone;
+        Bone.WorldMatrix = Skinned->GetBoneWorldMatrix(BoneIndex);
+
+        if (const FBoneInfo* Info = Skinned->GetBoneInfo(BoneIndex))
+        {
+            //Bone.ParentIndex = Info->ParentIndex;
+        }
+
+        OutInstance.Bones.push_back(Bone);
+    }
+}
+
 void FSkeletalMeshSceneProxy::UpdateShadow() 
 {
     UMeshComponent* Mesh = GetMeshComponent();
