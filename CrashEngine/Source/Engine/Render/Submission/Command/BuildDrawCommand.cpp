@@ -477,17 +477,18 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
         for (const auto& Instance : SkeletalDebugInstances)
         {
 			for (uint32 i = 0; i < Instance.Bones.size(); i++) {
+				auto& Bone = Instance.Bones[i];
                 // ...Retrieve World Position
-                FVector WorldPos;
+                FVector WorldPos = Bone.WorldMatrix.GetLocation();
 
 				// ...Draw Cone mesh Cmd
 				
 
 				// ...Draw lines to parents Cmd
-				if (Instance.Bones[i].ParentIndex != -1) 
+				if (Bone.ParentIndex != -1 && Bone.ParentIndex < Instance.Bones.size()) 
 				{
 					// Retrieve Parent World Position
-                    FVector ParentWorldPos;
+                    FVector ParentWorldPos = Instance.Bones[Bone.ParentIndex].WorldMatrix.GetLocation();
 
 					// Add line to batch (White, following the Unreal design)
 					SkeletonLines.AddLine(WorldPos, ParentWorldPos, FVector4(1, 1, 1, 1), FVector4(1, 1, 1, 1));
