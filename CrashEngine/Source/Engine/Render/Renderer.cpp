@@ -644,6 +644,8 @@ void FRenderer::BeginFrame(const FSceneView& SceneView, const FViewportRenderTar
 
     Context->RSSetViewports(1, &Viewport);
     Context->OMSetRenderTargets(1, &RTV, DSV);
+
+	FrameResources.BeginFrame();
 }
 
 void FRenderer::RenderFrame(ERenderPipelineType RootType, FRenderPipelineContext& PipelineContext)

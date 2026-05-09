@@ -483,7 +483,18 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
 				FVector WorldRot = Bone.WorldMatrix.GetEuler();
 
 				// ...Draw Cone mesh Cmd
+                FDrawCommand& Cmd = OutList.AddCommand();
+                FMatrix ConeWorld =
+                    FMatrix::MakeScaleMatrix(FVector(1.f, 1.f, 1.f)) *
+                    Bone.WorldMatrix;
+
+                FPerObjectCBData PerObject = FPerObjectCBData::FromWorldMatrix(ConeWorld);
+                PerObject.Color            = Bone.Color.ToVector4();
 				
+				FConstantBuffer* CB = Context.Resources->AcquirePerBoneDebugCB(Context.Device->GetDevice());
+                CB->Update(Context.Context, &PerObject, sizeof(FPerObjectCBData));
+                Cmd.PerObjectCB = CB;
+				Cmd.Pass = ERenderPass::SkeletalDebug;
 
 				// ...Draw lines to parents Cmd
 				if (Bone.ParentIndex != -1 && Bone.ParentIndex < Instance.Bones.size()) 
