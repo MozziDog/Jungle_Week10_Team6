@@ -28,23 +28,22 @@ UMeshComponent* FSkeletalMeshSceneProxy::GetMeshComponent() const
 }
 
 // TODO: Finish this stub once the class type rolls in
-void FSkeletalMeshSceneProxy::RebuildSectionRenderData() 
-{
-    //USkinnedMeshComponent* SMC    = static_cast<USkinnedMeshComponent*>(GetMeshComponent());
-    //USkeletalMesh*          Mesh  = SMC->GetSkeletalMesh();
-    //if (!Mesh || !Mesh->GetSkeletalMeshAsset())
-    //{
-    //    LODData[0].MeshBuffer = nullptr;
-    //    LODData[0].SectionRenderData.clear();
-    //    LODData[0].OwnedMaterialCBs.clear();
-
-    //    LODCount   = 1;
-    //    CurrentLOD = 0;
-    //    MeshBuffer = nullptr;
-    //    SectionRenderData.clear();
-    //    ActiveOwnedMaterialCBs.clear();
-    //    return;
-    //}
+//void FSkeletalMeshSceneProxy::RebuildSectionRenderData() 
+//{
+//    USkinnedMeshComponent* SMC    = static_cast<USkinnedMeshComponent*>(GetMeshComponent());
+//    USkeletalMesh*         Mesh   = SMC->GetSkeletalMesh();
+//    if (!Mesh || !Mesh->GetSkeletalMeshAsset())
+//    {
+//        LODData[0].MeshBuffer = nullptr;
+//        LODData[0].SectionRenderData.clear();
+//        LODData[0].OwnedMaterialCBs.clear();
+//        LODCount   = 1;
+//        CurrentLOD = 0;
+//        MeshBuffer = nullptr;
+//        SectionRenderData.clear();
+//        ActiveOwnedMaterialCBs.clear();
+//        return;
+//    }
 
     //ID3D11Device*        Device  = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
     //ID3D11DeviceContext* Context = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext() : nullptr;

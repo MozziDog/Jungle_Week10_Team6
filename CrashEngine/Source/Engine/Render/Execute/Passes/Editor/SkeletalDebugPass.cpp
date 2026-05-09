@@ -16,3 +16,8 @@ void FSkeletalDebugPass::PrepareTargets(FRenderPipelineContext& Context)
 	ID3D11DepthStencilView* DSV = Context.GetViewportDSV();
 	Context.Context->OMSetRenderTargets(1, &RTV, DSV);
 }
+
+void FSkeletalDebugPass::BuildDrawCommands(FRenderPipelineContext& Context)
+{
+    DrawCommandBuild::BuildLineDrawCommand(Context, *Context.DrawCommandList);
+}
