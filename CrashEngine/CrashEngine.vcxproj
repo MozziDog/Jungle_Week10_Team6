@@ -995,6 +995,7 @@ if exist "$(ProjectDir)ThirdParty\FBX_SDK\lib\release\libfbxsdk.dll" copy /Y "$(
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\State\DepthStencilStateManager.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\State\RasterizerStateManager.h" />
     <ClInclude Include="Source\Engine\Render\RHI\D3D11\Textures\SurfaceTexture.h" />
+    <ClInclude Include="Source\Engine\Render\Scene\Debug\SkeletalDebug.h" />
     <ClInclude Include="Source\Engine\Render\Scene\Scene.h" />
     <ClInclude Include="Source\Engine\Render\Scene\SceneProxyDirtyFlag.h" />
     <ClInclude Include="Source\Engine\Render\Scene\SceneProxyRegistry.h" />

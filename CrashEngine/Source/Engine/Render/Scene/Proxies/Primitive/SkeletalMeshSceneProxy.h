@@ -1,19 +1,8 @@
 ﻿#pragma once
 #include "MeshSceneProxy.h"
+#include "Render/Scene/Debug/SkeletalDebug.h"
 
 class USkeletalMeshComponent;
-
-struct FSkeletalDebugBone
-{
-    FMatrix WorldMatrix = FMatrix::Identity;
-    int32   ParentIndex = -1;
-    FColor  Color       = FColor(255, 255, 255);
-};
-
-struct FSkeletalDebugInstance
-{
-    TArray<FSkeletalDebugBone> Bones;
-};
 
 class FSkeletalMeshSceneProxy : public FMeshSceneProxy {
 public:

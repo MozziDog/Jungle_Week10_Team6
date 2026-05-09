@@ -2730,6 +2730,9 @@
     <ClInclude Include="Source\Engine\Render\Execute\Passes\Editor\SkeletalDebugPass.h">
       <Filter>Source\Engine\Render\Execute\Passes\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Render\Scene\Debug\SkeletalDebug.h">
+      <Filter>Source\Engine\Render\Scene\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CrashEngine.rc" />
