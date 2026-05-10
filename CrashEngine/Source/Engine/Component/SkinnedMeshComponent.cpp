@@ -273,13 +273,24 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
 	// Per - Submesh
 	for (uint32 i = 0; i < SkeletalMesh->GetSubMeshes().size(); i++) {
         USkeletalSubMesh* Mesh = SkeletalMesh->GetSubMeshes()[i];
+		if (!Mesh) continue;
 
 		// Per - Vertex
         TArray<FVertexSkinned>& Vertices = Mesh->GetSkeletalSubMeshAsset()->Vertices;
 		for (uint32 j = 0; j < Vertices.size(); j++)
         {
 			FVertexSkinned& Vertex = Vertices[i];
+            FMatrix Skin = FMatrix();
 
+			// Using up to 8 bone weights per vertex by convention
+            for (int k = 0; k < 8; ++k)
+            {
+                float Weight = Vertex.BoneWeights[k];
+                if (Weight <= 0.0f)
+                    continue;
+                Skin += SkinningMatrices[Vertex.BoneIndices[k]] * Weight;
+            }
+			 
 		}
 	}
 }
