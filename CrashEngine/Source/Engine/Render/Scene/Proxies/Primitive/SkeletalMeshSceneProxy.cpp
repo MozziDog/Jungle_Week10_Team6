@@ -104,9 +104,6 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
             Draw.MeshBuffer = SubBuffer;
             Draw.FirstIndex = Section.FirstIndex;
             Draw.IndexCount = Section.NumTriangles * 3;
-            // resolve material with GlobalMaterialBase + Section.MaterialIndex
-            // build SRVs + MaterialCB (reuse FMeshSceneProxy::BuildMeshMaterialCB / TryGetTextureSRV)
-
 			Draw.MaterialCB[0] = nullptr;
             Draw.MaterialCB[1] = nullptr;
 
@@ -136,7 +133,7 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
             if (MaterialCB)
             {
                 Draw.MaterialCB[0] = MaterialCB->GetConstantBuffer();
-                LODData[0].OwnedMaterialCBs.push_back(std::move(MaterialCB));
+                Lod0.OwnedMaterialCBs.push_back(std::move(MaterialCB));
             }
 
             Lod0.SectionRenderData.push_back(Draw);

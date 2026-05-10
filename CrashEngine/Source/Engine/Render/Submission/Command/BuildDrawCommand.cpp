@@ -34,7 +34,6 @@
 
 void DrawCommandBuild::BuildMeshDrawCommand(const FPrimitiveProxy& Proxy, ERenderPass Pass, FRenderPipelineContext& Context, FDrawCommandList& OutList, uint16 UserBits)
 {
-    const bool bHasMeshBuffer	  = (Proxy.MeshBuffer != nullptr);
     const bool bProxyMeshValid    = Proxy.MeshBuffer && Proxy.MeshBuffer->IsValid();
     const bool bHasSectionBuffers = std::any_of(
         Proxy.SectionRenderData.begin(),
