@@ -83,7 +83,7 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
 	int32 GlobalMaterialBase = 0;
     ID3D11Device*        Device             = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
     ID3D11DeviceContext* Context            = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext() : nullptr;
-	for (const USkeletalSubMesh* SubMesh : Mesh->GetSubMeshes())
+	for (USkeletalSubMesh* SubMesh : Mesh->GetSubMeshes())
     {
 		if (!SubMesh || !SubMesh->GetSkeletalSubMeshAsset()) continue;
 
