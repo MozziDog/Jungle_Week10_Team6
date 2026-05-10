@@ -48,8 +48,7 @@ protected:
 	TArray<FMatrix> InverseBindMatrices;
 
 	TArray<FMatrix> SkinningMatrices;
-
-    TArray<FVertexPNCT_T> SkinnedVertices;
+    TArray<FVertexSkinned> SkinnedVertices;
 
     FString SkeletalMeshPath = "None";
 };

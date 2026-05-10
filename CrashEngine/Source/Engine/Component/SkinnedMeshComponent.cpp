@@ -240,7 +240,7 @@ bool USkinnedMeshComponent::SetBoneLocalMatrix(int32 BoneIndex, const FMatrix& L
     CacheLocalBounds();
 
     // CPU skinning 구현이 붙으면 여기서 갱신한다.
-    // UpdateSkinningMatrices();
+     UpdateSkinningMatrices();
     // UpdateSkinnedVertices();
 
     MarkRenderStateDirty();
@@ -250,10 +250,27 @@ bool USkinnedMeshComponent::SetBoneLocalMatrix(int32 BoneIndex, const FMatrix& L
 
 void USkinnedMeshComponent::UpdateSkinningMatrices()
 {
+    SkinningMatrices.clear();
+    for (uint32 i = 0; i < InverseBindMatrices.size(); i++)
+    {
+        SkinningMatrices.push_back(CurrentBoneGlobalMatrices[i] * InverseBindMatrices[i]);
+    }
 }
 
 void USkinnedMeshComponent::UpdateSkinnedVertices()
 {
+    //struct FVertexSkinned - VertexTypes.h
+    //{
+    //    FVector Position;
+    //    FVector Normal;
+    //    FVector4 Color;
+    //    FVector2 UV;
+    //    FVector4 Tangent;
+    //    uint16 BoneIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    //    float BoneWeights[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    //};
+
+
 }
 
 const TArray<FVertexPNCT_T>& USkinnedMeshComponent::GetSkinnedVertices() const
