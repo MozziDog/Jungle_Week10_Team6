@@ -324,14 +324,15 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
             Vertex.Tangent = FVector4(Skin.TransformVector(FVector(SourceVertex.Tangent.X, SourceVertex.Tangent.Y, SourceVertex.Tangent.Z)).Normalized(), SourceVertex.Tangent.W);
 		}
 
-		Asset->RenderBuffer->UpdateVertex(Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
+		// TODO: Reroute the call elsewhere so that the modified vertices are not bound to the asset
+		//Asset->RenderBuffer->UpdateVertex(Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
 	}
 }
 
-//const TArray<FVertexSkinned>& USkinnedMeshComponent::GetSkinnedVertices() const
-//{
-//    return SkinnedVertices;
-//}
+const TArray<FVertexSkinned>& USkinnedMeshComponent::GetSkinnedVertices() const
+{
+    return SkinnedVertices;
+}
 
 const TArray<uint32>& USkinnedMeshComponent::GetIndices() const
 {
