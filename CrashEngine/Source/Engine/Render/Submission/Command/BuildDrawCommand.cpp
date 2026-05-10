@@ -220,7 +220,7 @@ void DrawCommandBuild::BuildMeshDrawCommand(const FPrimitiveProxy& Proxy, ERende
             Pass,
             FinalUserBits,
             Cmd.Shader,
-            Proxy.MeshBuffer,
+            Cmd.MeshBuffer,
             FinalMaterialHash);
     };
 
