@@ -151,6 +151,7 @@ void USkinnedMeshComponent::RefreshReferencePose()
 
     RefPoseBoneLocalMatrices.resize(BoneCount, FMatrix::Identity);
     RefPoseBoneGlobalMatrices.resize(BoneCount, FMatrix::Identity);
+	InverseBindMatrices.resize(BoneCount, FMatrix::Identity);
 
     for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
     {
@@ -166,6 +167,8 @@ void USkinnedMeshComponent::RefreshReferencePose()
         {
             RefPoseBoneGlobalMatrices[BoneIndex] = LocalMatrix;
         }
+
+		InverseBindMatrices[BoneIndex] = (RefPoseBoneGlobalMatrices[BoneIndex]).GetInverse();
     }
 }
 

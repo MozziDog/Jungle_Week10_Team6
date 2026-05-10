@@ -45,6 +45,7 @@ protected:
     TArray<FMatrix> RefPoseBoneGlobalMatrices;
     TArray<FMatrix> CurrentBoneLocalMatrices; // 현재 pose에서 각 본의 Local transform을 저장하는 배열
     TArray<FMatrix> CurrentBoneGlobalMatrices;
+	TArray<FMatrix> InverseBindMatrices;
 
 	TArray<FMatrix> SkinningMatrices;
 
