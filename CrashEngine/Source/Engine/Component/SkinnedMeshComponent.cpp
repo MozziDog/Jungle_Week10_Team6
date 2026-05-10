@@ -270,13 +270,24 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
     //    float BoneWeights[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     //};
 
+	// Per - Submesh
+	for (uint32 i = 0; i < SkeletalMesh->GetSubMeshes().size(); i++) {
+        USkeletalSubMesh* Mesh = SkeletalMesh->GetSubMeshes()[i];
 
+		// Per - Vertex
+        TArray<FVertexSkinned>& Vertices = Mesh->GetSkeletalSubMeshAsset()->Vertices;
+		for (uint32 j = 0; j < Vertices.size(); j++)
+        {
+			FVertexSkinned& Vertex = Vertices[i];
+
+		}
+	}
 }
 
-const TArray<FVertexSkinned>& USkinnedMeshComponent::GetSkinnedVertices() const
-{
-    return SkinnedVertices;
-}
+//const TArray<FVertexSkinned>& USkinnedMeshComponent::GetSkinnedVertices() const
+//{
+//    return SkinnedVertices;
+//}
 
 const TArray<uint32>& USkinnedMeshComponent::GetIndices() const
 {
