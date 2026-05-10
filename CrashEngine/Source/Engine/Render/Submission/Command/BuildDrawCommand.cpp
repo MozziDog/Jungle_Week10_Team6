@@ -34,10 +34,17 @@
 
 void DrawCommandBuild::BuildMeshDrawCommand(const FPrimitiveProxy& Proxy, ERenderPass Pass, FRenderPipelineContext& Context, FDrawCommandList& OutList, uint16 UserBits)
 {
-    const bool bHasMeshBuffer = (Proxy.MeshBuffer != nullptr);
-    const bool bMeshValid     = bHasMeshBuffer && Proxy.MeshBuffer->IsValid();
+    const bool bHasMeshBuffer	  = (Proxy.MeshBuffer != nullptr);
+    const bool bProxyMeshValid    = Proxy.MeshBuffer && Proxy.MeshBuffer->IsValid();
+    const bool bHasSectionBuffers = std::any_of(
+        Proxy.SectionRenderData.begin(),
+        Proxy.SectionRenderData.end(),
+        [](const FMeshSectionRenderData& S)
+        {
+            return S.MeshBuffer && S.MeshBuffer->IsValid();
+        });
 
-    if (!bMeshValid)
+    if (!bProxyMeshValid && !bHasSectionBuffers)
     {
         return;
     }
