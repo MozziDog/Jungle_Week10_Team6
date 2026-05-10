@@ -118,7 +118,7 @@ void DrawCommandBuild::BuildMeshDrawCommand(const FPrimitiveProxy& Proxy, ERende
     auto AddSection = [&](uint32 FirstIndex, uint32 IndexCount, ID3D11ShaderResourceView* BaseSRV, ID3D11ShaderResourceView* InNormalSRV,
                           ID3D11ShaderResourceView* InSpecularSRV,
                           FConstantBuffer* CB0, FConstantBuffer* CB1,
-                          EBlendState SectionBlend, EDepthStencilState SectionDepthStencil, ERasterizerState SectionRasterizer)
+                          EBlendState SectionBlend, EDepthStencilState SectionDepthStencil, ERasterizerState SectionRasterizer, FMeshBuffer* MeshBuffer = nullptr)
     {
         if (IndexCount == 0)
         {
@@ -127,7 +127,7 @@ void DrawCommandBuild::BuildMeshDrawCommand(const FPrimitiveProxy& Proxy, ERende
 
         FDrawCommand& Cmd = OutList.AddCommand();
         Cmd.Shader        = Shader;
-        Cmd.MeshBuffer    = Proxy.MeshBuffer;
+        Cmd.MeshBuffer    = MeshBuffer ? MeshBuffer : Proxy.MeshBuffer;
         Cmd.FirstIndex    = FirstIndex;
         Cmd.IndexCount    = IndexCount;
 
@@ -231,7 +231,8 @@ void DrawCommandBuild::BuildMeshDrawCommand(const FPrimitiveProxy& Proxy, ERende
                 S.MaterialCB[1],
                 S.Blend,
                 S.DepthStencil,
-                S.Rasterizer);
+                S.Rasterizer,
+				S.MeshBuffer);
         }
     }
     else
