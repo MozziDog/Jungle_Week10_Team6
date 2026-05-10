@@ -1,8 +1,10 @@
 ﻿#include "Component/SkinnedMeshComponent.h"
 
+#include "Engine/Runtime/Engine.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/Skeleton.h"
 #include "Object/ObjectFactory.h"
+#include "Render/Renderer.h"
 
 #include <algorithm>
 
@@ -46,9 +48,8 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
     RefreshReferencePose();
     ResetToReferencePose();
 
-    // CPU skinning 구현이 붙으면 여기서 갱신한다.
-    // UpdateSkinningMatrices();
-    // UpdateSkinnedVertices();
+    UpdateSkinningMatrices();
+    UpdateSkinnedVertices();
 
     CacheLocalBounds();
     MarkRenderStateDirty();
@@ -237,11 +238,9 @@ bool USkinnedMeshComponent::SetBoneLocalMatrix(int32 BoneIndex, const FMatrix& L
 
     CurrentBoneLocalMatrices[BoneIndex] = LocalMatrix;
     RefreshBoneTransforms();
+    UpdateSkinningMatrices();
+    UpdateSkinnedVertices();
     CacheLocalBounds();
-
-    // CPU skinning 구현이 붙으면 여기서 갱신한다.
-     UpdateSkinningMatrices();
-    // UpdateSkinnedVertices();
 
     MarkRenderStateDirty();
     MarkWorldBoundsDirty();
@@ -251,7 +250,10 @@ bool USkinnedMeshComponent::SetBoneLocalMatrix(int32 BoneIndex, const FMatrix& L
 void USkinnedMeshComponent::UpdateSkinningMatrices()
 {
     SkinningMatrices.clear();
-    for (uint32 i = 0; i < InverseBindMatrices.size(); i++)
+
+    const size_t MatrixCount = (std::min)(CurrentBoneGlobalMatrices.size(), InverseBindMatrices.size());
+    SkinningMatrices.reserve(MatrixCount);
+    for (size_t i = 0; i < MatrixCount; ++i)
     {
         SkinningMatrices.push_back(CurrentBoneGlobalMatrices[i] * InverseBindMatrices[i]);
     }
@@ -259,6 +261,17 @@ void USkinnedMeshComponent::UpdateSkinningMatrices()
 
 void USkinnedMeshComponent::UpdateSkinnedVertices()
 {
+    if (!SkeletalMesh || SkinningMatrices.empty())
+    {
+        return;
+    }
+
+    ID3D11DeviceContext* Context = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext() : nullptr;
+    if (!Context)
+    {
+        return;
+    }
+
     //struct FVertexSkinned - VertexTypes.h
     //{
     //    FVector Position;
@@ -273,25 +286,45 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
 	// Per - Submesh
 	for (uint32 i = 0; i < SkeletalMesh->GetSubMeshes().size(); i++) {
         USkeletalSubMesh* Mesh = SkeletalMesh->GetSubMeshes()[i];
-		if (!Mesh) continue;
+		if (!Mesh || !Mesh->GetSkeletalSubMeshAsset()) continue;
+
+        FSkeletalSubMesh* Asset = Mesh->GetSkeletalSubMeshAsset();
+        if (!Asset->RenderBuffer || Asset->Vertices.empty())
+        {
+            continue;
+        }
+
+        TArray<FVertexSkinned> SkinnedVertices = Asset->Vertices;
 
 		// Per - Vertex
-        TArray<FVertexSkinned>& Vertices = Mesh->GetSkeletalSubMeshAsset()->Vertices;
-		for (uint32 j = 0; j < Vertices.size(); j++)
+		for (uint32 j = 0; j < SkinnedVertices.size(); j++)
         {
-			FVertexSkinned& Vertex = Vertices[i];
+            const FVertexSkinned& SourceVertex = Asset->Vertices[j];
+			FVertexSkinned& Vertex = SkinnedVertices[j];
             FMatrix Skin = FMatrix();
 
 			// Using up to 8 bone weights per vertex by convention
             for (int k = 0; k < 8; ++k)
             {
-                float Weight = Vertex.BoneWeights[k];
+                float Weight = SourceVertex.BoneWeights[k];
                 if (Weight <= 0.0f)
                     continue;
-                Skin += SkinningMatrices[Vertex.BoneIndices[k]] * Weight;
+
+                const uint16 BoneIndex = SourceVertex.BoneIndices[k];
+                if (BoneIndex >= SkinningMatrices.size())
+                {
+                    continue;
+                }
+
+                Skin += SkinningMatrices[BoneIndex] * Weight;
             }
-			 
+
+			Vertex.Position = Skin.TransformPositionWithW(SourceVertex.Position);
+            Vertex.Normal = Skin.TransformVector(SourceVertex.Normal).Normalized();
+            Vertex.Tangent = FVector4(Skin.TransformVector(FVector(SourceVertex.Tangent.X, SourceVertex.Tangent.Y, SourceVertex.Tangent.Z)).Normalized(), SourceVertex.Tangent.W);
 		}
+
+		Asset->RenderBuffer->UpdateVertex(Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
 	}
 }
 
