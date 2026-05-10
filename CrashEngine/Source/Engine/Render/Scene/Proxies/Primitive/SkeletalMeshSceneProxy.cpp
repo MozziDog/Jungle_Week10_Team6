@@ -135,7 +135,12 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
 
             Lod0.SectionRenderData.push_back(Draw);
         }
-        GlobalMaterialBase += static_cast<uint32>(Slots.size());
+
+        if (!SubBuffer || !SubBuffer->IsValid())
+        {
+            GlobalMaterialBase += static_cast<int32>(Slots.size());
+            continue;
+        }
 	}
 
 	
