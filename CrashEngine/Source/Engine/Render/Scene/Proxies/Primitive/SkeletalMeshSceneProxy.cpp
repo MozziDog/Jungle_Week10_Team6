@@ -56,7 +56,22 @@ UMeshComponent* FSkeletalMeshSceneProxy::GetMeshComponent() const
 void FSkeletalMeshSceneProxy::RebuildSectionRenderData() 
 {
     USkinnedMeshComponent* SMC    = static_cast<USkinnedMeshComponent*>(GetMeshComponent());
+    if (!SMC)
+    {
+        SectionRenderData.clear();
+        ActiveOwnedMaterialCBs.clear();
+        MeshBuffer = nullptr;
+        return;
+
+    }
     USkeletalMesh*         Mesh   = SMC->GetSkeletalMesh();
+    if (!Mesh)
+    {
+        SectionRenderData.clear();
+        ActiveOwnedMaterialCBs.clear();
+        MeshBuffer = nullptr;
+        return;
+    }
 
 	LODCount        = 1;
     CurrentLOD      = 0;
@@ -93,9 +108,10 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
             const int32 MaterialIndex = Section.MaterialIndex;
             if (MaterialIndex >= 0 && MaterialIndex < static_cast<int32>(Slots.size()))
             {
-                if (MaterialIndex < static_cast<int32>(OverAll.size()) && OverAll[MaterialIndex])
+                const int32 GlobalIndex = GlobalMaterialBase + MaterialIndex;
+                if (GlobalIndex < static_cast<int32>(OverAll.size()) && OverAll[GlobalIndex])
                 {
-                    Mat = OverAll[MaterialIndex];
+                    Mat = OverAll[GlobalIndex];
                 }
                 else if (Slots[MaterialIndex].MaterialInterface)
                 {
@@ -124,6 +140,7 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
 
 	
 	SortSectionRenderDataByMaterial(Lod0.SectionRenderData);
+    std::swap(MeshBuffer, Lod0.MeshBuffer);
     std::swap(SectionRenderData, Lod0.SectionRenderData);
     std::swap(ActiveOwnedMaterialCBs, Lod0.OwnedMaterialCBs);
 }
