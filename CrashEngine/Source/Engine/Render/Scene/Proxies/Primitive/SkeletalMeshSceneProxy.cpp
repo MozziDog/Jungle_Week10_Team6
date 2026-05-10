@@ -92,6 +92,12 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
         const auto&          Slots   = SubMesh->GetStaticMaterials();
         const auto&          OverAll = SMC->GetOverrideMaterials();
 
+		if (!SubBuffer || !SubBuffer->IsValid())
+        {
+            GlobalMaterialBase += static_cast<int32>(Slots.size());
+            continue;
+        }
+
 		for (const FSkeletalMeshSection& Section : Asset->Sections)
         {
             FMeshSectionRenderData Draw;
@@ -136,11 +142,7 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
             Lod0.SectionRenderData.push_back(Draw);
         }
 
-        if (!SubBuffer || !SubBuffer->IsValid())
-        {
-            GlobalMaterialBase += static_cast<int32>(Slots.size());
-            continue;
-        }
+        GlobalMaterialBase += static_cast<int32>(Slots.size());
 	}
 
 	
