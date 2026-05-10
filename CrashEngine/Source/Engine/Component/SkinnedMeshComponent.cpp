@@ -273,7 +273,7 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
 
 }
 
-const TArray<FVertexPNCT_T>& USkinnedMeshComponent::GetSkinnedVertices() const
+const TArray<FVertexSkinned>& USkinnedMeshComponent::GetSkinnedVertices() const
 {
     return SkinnedVertices;
 }

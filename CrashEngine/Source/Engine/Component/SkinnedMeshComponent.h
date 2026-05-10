@@ -28,7 +28,7 @@ public:
 	const FMatrix& GetBoneComponentMatrix(int32 BoneIndex) const;
 
 
-	const TArray<FVertexPNCT_T>& GetSkinnedVertices() const;
+	const TArray<FVertexSkinned>& GetSkinnedVertices() const;
     const TArray<uint32>& GetIndices() const;
 
     int32 GetNumBones() const;
