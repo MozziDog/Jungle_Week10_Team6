@@ -14,37 +14,49 @@ IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
 
 bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FHitResult& OutHit)
 {
+	if (!SkeletalMesh) return false;
     float TMin, TMax;
     if (!FRayUtils::IntersectRayAABB(Ray, GetWorldBoundingBox().Min, GetWorldBoundingBox().Max, TMin, TMax))
         return false;
-    OutHit.Distance = TMin;
-    OutHit.HitComponent = this;
-    OutHit.WorldHitLocation = Ray.Origin + Ray.Direction * TMin;
-    return true;
 
-	//for (uint32 i = 0; i < SkeletalMesh->GetSubMeshes().size(); i++)
- //   {
-	//	const auto* SubMesh = SkeletalMesh->GetSubMeshes()[i];
-	//	if (!SubMesh) continue;
+	const FMatrix& World = GetWorldMatrix();
+    const FMatrix& WorldInv = GetWorldInverseMatrix();
 
-	//	const FMatrix& WorldInverse = InverseBindMatrices[i];
-	//	FVector LocalOrigin = WorldInverse.TransformPositionWithW(Ray.Origin);
- //       FVector LocalDirection = WorldInverse.TransformVector(Ray.Direction);
- //       LocalDirection.Normalize();
+	bool bAny = false;
+    FHitResult Best{};
+    Best.Distance = FLT_MAX;
 
- //       // Use the mesh BVH as the fast component picking path.
- //       if (SubMesh->RaycastMeshTrianglesWithBVHLocal(LocalOrigin, LocalDirection, OutHitResult))
- //       {
- //           const FVector LocalHitPoint = LocalOrigin + LocalDirection * OutHitResult.Distance;
- //           const FVector WorldHitPoint = WorldMatrix.TransformPositionWithW(LocalHitPoint);
- //           OutHitResult.Distance = FVector::Distance(Ray.Origin, WorldHitPoint);
- //           OutHitResult.HitComponent = this;
- //           return true;
- //       }
-	//
-	//}
+	const auto& SubMeshes = SkeletalMesh->GetSubMeshes();
 
-	//return false;
+	for (uint32 i = 0; i < SubMeshes.size() && i < SubMeshSkinnedVertices.size(); i++)
+    {
+        const auto* SubMesh = SubMeshes[i];
+		if (!SubMesh || !SubMesh->GetSkeletalSubMeshAsset()) continue;
+		const auto& Skinned = SubMeshSkinnedVertices[i];
+		if (Skinned.empty()) continue;
+		const TArray<uint32>& Indices = SubMesh->GetSkeletalSubMeshAsset()->Indices;
+		if (Indices.empty()) continue;
+
+
+		FHitResult Hit{};
+        if (FRayUtils::RaycastTriangles(Ray, World, WorldInv,
+                                        Skinned.data(), sizeof(FVertexSkinned),
+                                        Indices.data(), (uint32)Indices.size(), Hit) &&
+										Hit.Distance < Best.Distance)
+        {
+            Best = Hit;
+            bAny = true;
+        }
+	}
+
+	if (bAny)
+    {
+        Best.HitComponent = this;
+        OutHit = Best;
+		return true;
+	}
+
+	return false;
 }
 
 void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
@@ -319,6 +331,8 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
     //    float BoneWeights[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     //};
 
+	SubMeshSkinnedVertices.clear();
+
 	// Per - Submesh
 	for (uint32 i = 0; i < SkeletalMesh->GetSubMeshes().size(); i++) {
         USkeletalSubMesh* Mesh = SkeletalMesh->GetSubMeshes()[i];
@@ -330,7 +344,7 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
             continue;
         }
 
-        SkinnedVertices = Asset->Vertices;
+        TArray<FVertexSkinned>& SkinnedVertices = Asset->Vertices;
 
 		// Per - Vertex
 		for (uint32 j = 0; j < SkinnedVertices.size(); j++)
@@ -371,12 +385,14 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
         {
             SkeletalProxy->UpdateSkinnedSubMeshVertices(i, Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
 		}
+
+		SubMeshSkinnedVertices.push_back(SkinnedVertices);
 	}
 }
 
-const TArray<FVertexSkinned>& USkinnedMeshComponent::GetSkinnedVertices() const
+const TArray<TArray<FVertexSkinned>>& USkinnedMeshComponent::GetSkinnedVertices() const
 {
-    return SkinnedVertices;
+    return SubMeshSkinnedVertices;
 }
 
 const TArray<uint32>& USkinnedMeshComponent::GetIndices() const

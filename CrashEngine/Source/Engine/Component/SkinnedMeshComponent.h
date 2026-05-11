@@ -30,7 +30,7 @@ public:
 	const FMatrix& GetBoneComponentMatrix(int32 BoneIndex) const;
 
 
-	const TArray<FVertexSkinned>& GetSkinnedVertices() const;
+	const TArray<TArray<FVertexSkinned>>& GetSkinnedVertices() const;
     const TArray<uint32>& GetIndices() const;
 
     int32 GetNumBones() const;
@@ -50,7 +50,7 @@ protected:
 	TArray<FMatrix> InverseBindMatrices;
 
 	TArray<FMatrix> SkinningMatrices;
-    TArray<FVertexSkinned> SkinnedVertices;
+    TArray<TArray<FVertexSkinned>> SubMeshSkinnedVertices;
 
     FString SkeletalMeshPath = "None";
 };
