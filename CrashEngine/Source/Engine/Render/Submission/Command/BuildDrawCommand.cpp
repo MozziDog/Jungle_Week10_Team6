@@ -566,7 +566,7 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
                 const FVector ParentPos = Instance.Bones[Bone.ParentIndex].WorldMatrix.GetLocation();
                 ConeWorld = MakeBoneConeWorld(ParentPos, BonePos);
 
-                SkeletonLines.AddLine(ParentPos, BonePos, Bone.Color.ToVector4(), Bone.Color.ToVector4());
+                SkeletonLines.AddLine(ParentPos, BonePos, FVector4(255, 255, 255, 255));
             }
             else
             {
