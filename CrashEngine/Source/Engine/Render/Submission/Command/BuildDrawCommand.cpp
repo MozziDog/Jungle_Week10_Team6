@@ -604,7 +604,7 @@ void DrawCommandBuild::BuildSkeletalDebugDrawCommand(FRenderPipelineContext& Con
 
         FDrawCommand& Cmd = OutList.AddCommand();
         Cmd.Shader        = LineShader;
-        Cmd.DepthStencil  = LinePreset.DepthStencil;
+        Cmd.DepthStencil  = EDepthStencilState::NoDepth;
         Cmd.Blend         = LinePreset.Blend;
         Cmd.Rasterizer    = ERasterizerState::SolidNoCull;
         Cmd.Topology      = LinePreset.Topology;
