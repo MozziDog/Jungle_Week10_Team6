@@ -412,7 +412,7 @@ const FMatrix& USkinnedMeshComponent::GetBoneComponentMatrix(int32 BoneIndex) co
 
 FMatrix USkinnedMeshComponent::GetBoneWorldMatrix(int32 BoneIndex) const
 {
-    return GetBoneComponentMatrix(BoneIndex) * GetWorldMatrix();
+    return GetBoneComponentMatrix(BoneIndex) * FMatrix::MakeScaleMatrix(0.01f) * GetWorldMatrix();
 }
 
 int32 USkinnedMeshComponent::FindBoneIndex(const FName& BoneName) const
