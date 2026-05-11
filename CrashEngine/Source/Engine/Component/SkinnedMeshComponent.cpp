@@ -37,7 +37,6 @@ bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FHitResult& OutH
 		const TArray<uint32>& Indices = SubMesh->GetSkeletalSubMeshAsset()->Indices;
 		if (Indices.empty()) continue;
 
-
 		FHitResult Hit{};
         if (FRayUtils::RaycastTriangles(Ray, World, WorldInv,
                                         Skinned.data(), sizeof(FVertexSkinned),
