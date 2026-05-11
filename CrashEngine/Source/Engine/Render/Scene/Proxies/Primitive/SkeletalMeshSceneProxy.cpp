@@ -16,6 +16,16 @@ FSkeletalMeshSceneProxy::FSkeletalMeshSceneProxy(USkeletalMeshComponent* InCompo
 	UpdateShadow();
 }
 
+void FSkeletalMeshSceneProxy::UpdateMesh()
+{
+    FMeshSceneProxy::UpdateMesh();
+
+    if (USkinnedMeshComponent* SMC = static_cast<USkinnedMeshComponent*>(GetMeshComponent()))
+    {
+        SMC->UpdateSkinnedVertices();
+    }
+}
+
 void FSkeletalMeshSceneProxy::BuildSkeletalDebugInstance(FSkeletalDebugInstance& OutInstance) const
 {
 	OutInstance.Bones.clear();
@@ -30,6 +40,7 @@ void FSkeletalMeshSceneProxy::BuildSkeletalDebugInstance(FSkeletalDebugInstance&
     for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
     {
         FSkeletalDebugBone Bone;
+		Bone.Color = FColor(255, 255, 0);
         Bone.WorldMatrix = Skinned->GetBoneWorldMatrix(BoneIndex);
 
         if (const FBoneInfo* Info = Skinned->GetBoneInfo(BoneIndex))
@@ -45,6 +56,16 @@ void FSkeletalMeshSceneProxy::UpdateShadow()
 {
     UMeshComponent* Mesh = GetMeshComponent();
     bCastShadow          = Mesh ? Mesh->ShouldCastShadow() : true;
+}
+
+bool FSkeletalMeshSceneProxy::UpdateSkinnedSubMeshVertices(uint32 SubMeshIndex, ID3D11DeviceContext* Context, const FVertexSkinned* Vertices, uint32 VertexCount)
+{
+    if (SubMeshIndex >= SkinnedSubMeshBuffers.size() || !SkinnedSubMeshBuffers[SubMeshIndex])
+    {
+        return false;
+    }
+
+    return SkinnedSubMeshBuffers[SubMeshIndex]->UpdateVertex(Context, Vertices, VertexCount);
 }
 
 UMeshComponent* FSkeletalMeshSceneProxy::GetMeshComponent() const
@@ -79,18 +100,32 @@ void FSkeletalMeshSceneProxy::RebuildSectionRenderData()
     Lod0.MeshBuffer = nullptr; // proxy-level buffer unused. Sections carry their own
     Lod0.SectionRenderData.clear();
     Lod0.OwnedMaterialCBs.clear();
+    SkinnedSubMeshBuffers.clear();
+    SkinnedSubMeshBuffers.resize(Mesh->GetSubMeshes().size());
 
 	int32 GlobalMaterialBase = 0;
     ID3D11Device*        Device             = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDevice() : nullptr;
     ID3D11DeviceContext* Context            = GEngine ? GEngine->GetRenderer().GetFD3DDevice().GetDeviceContext() : nullptr;
-	for (USkeletalSubMesh* SubMesh : Mesh->GetSubMeshes())
+	for (uint32 SubMeshIndex = 0; SubMeshIndex < Mesh->GetSubMeshes().size(); ++SubMeshIndex)
     {
+        USkeletalSubMesh* SubMesh = Mesh->GetSubMeshes()[SubMeshIndex];
 		if (!SubMesh || !SubMesh->GetSkeletalSubMeshAsset()) continue;
 
 		FSkeletalSubMesh*    Asset   = SubMesh->GetSkeletalSubMeshAsset();
-        FSkeletalMeshBuffer* SubBuffer  = Asset->RenderBuffer.get();
+        FSkeletalMeshBuffer* SubBuffer  = nullptr;
         const auto&          Slots   = SubMesh->GetStaticMaterials();
         const auto&          OverAll = SMC->GetOverrideMaterials();
+
+        if (Device && !Asset->Vertices.empty())
+        {
+            TMeshData<FVertexSkinned> RenderMeshData;
+            RenderMeshData.Vertices = Asset->Vertices;
+            RenderMeshData.Indices = Asset->Indices;
+
+            SkinnedSubMeshBuffers[SubMeshIndex] = std::make_unique<FSkeletalMeshBuffer>();
+            SkinnedSubMeshBuffers[SubMeshIndex]->Create(Device, RenderMeshData);
+            SubBuffer = SkinnedSubMeshBuffers[SubMeshIndex].get();
+        }
 
 		if (!SubBuffer || !SubBuffer->IsValid())
         {

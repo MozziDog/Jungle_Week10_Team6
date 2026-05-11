@@ -5,6 +5,7 @@
 #include "Mesh/Skeleton.h"
 #include "Object/ObjectFactory.h"
 #include "Render/Renderer.h"
+#include "Render/Scene/Proxies/Primitive/SkeletalMeshSceneProxy.h"
 
 #include <algorithm>
 
@@ -242,7 +243,6 @@ bool USkinnedMeshComponent::SetBoneLocalMatrix(int32 BoneIndex, const FMatrix& L
     UpdateSkinnedVertices();
     CacheLocalBounds();
 
-    MarkRenderStateDirty();
     MarkWorldBoundsDirty();
     return true;
 }
@@ -294,7 +294,7 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
             continue;
         }
 
-        TArray<FVertexSkinned> SkinnedVertices = Asset->Vertices;
+        SkinnedVertices = Asset->Vertices;
 
 		// Per - Vertex
 		for (uint32 j = 0; j < SkinnedVertices.size(); j++)
@@ -302,6 +302,7 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
             const FVertexSkinned& SourceVertex = Asset->Vertices[j];
 			FVertexSkinned& Vertex = SkinnedVertices[j];
             FMatrix Skin = FMatrix();
+            bool bAppliedSkin = false;
 
 			// Using up to 8 bone weights per vertex by convention
             for (int k = 0; k < 8; ++k)
@@ -317,6 +318,12 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
                 }
 
                 Skin += SkinningMatrices[BoneIndex] * Weight;
+                bAppliedSkin = true;
+            }
+
+            if (!bAppliedSkin)
+            {
+                continue;
             }
 
 			Vertex.Position = Skin.TransformPositionWithW(SourceVertex.Position);
@@ -324,11 +331,9 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
             Vertex.Tangent = FVector4(Skin.TransformVector(FVector(SourceVertex.Tangent.X, SourceVertex.Tangent.Y, SourceVertex.Tangent.Z)).Normalized(), SourceVertex.Tangent.W);
 		}
 
-		if (!SceneProxy || i >= SceneProxy->SectionRenderData.size()) return;
-		auto* MeshBuffer = SceneProxy->SectionRenderData[i].MeshBuffer;
-		if (FSkeletalMeshBuffer* SKBuffer = static_cast<FSkeletalMeshBuffer*>(MeshBuffer))
+		if (FSkeletalMeshSceneProxy* SkeletalProxy = static_cast<FSkeletalMeshSceneProxy*>(SceneProxy))
         {
-            SKBuffer->UpdateVertex(Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
+            SkeletalProxy->UpdateSkinnedSubMeshVertices(i, Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
 		}
 	}
 }
