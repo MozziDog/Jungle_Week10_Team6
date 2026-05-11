@@ -324,8 +324,12 @@ void USkinnedMeshComponent::UpdateSkinnedVertices()
             Vertex.Tangent = FVector4(Skin.TransformVector(FVector(SourceVertex.Tangent.X, SourceVertex.Tangent.Y, SourceVertex.Tangent.Z)).Normalized(), SourceVertex.Tangent.W);
 		}
 
-		// TODO: Reroute the call elsewhere so that the modified vertices are not bound to the asset
-		//Asset->RenderBuffer->UpdateVertex(Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
+		if (!SceneProxy || i >= SceneProxy->SectionRenderData.size()) return;
+		auto* MeshBuffer = SceneProxy->SectionRenderData[i].MeshBuffer;
+		if (FSkeletalMeshBuffer* SKBuffer = static_cast<FSkeletalMeshBuffer*>(MeshBuffer))
+        {
+            SKBuffer->UpdateVertex(Context, SkinnedVertices.data(), static_cast<uint32>(SkinnedVertices.size()));
+		}
 	}
 }
 
