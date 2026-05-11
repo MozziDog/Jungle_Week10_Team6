@@ -6,10 +6,22 @@
 #include "Object/ObjectFactory.h"
 #include "Render/Renderer.h"
 #include "Render/Scene/Proxies/Primitive/SkeletalMeshSceneProxy.h"
+#include "Collision/RayUtils.h"
 
 #include <algorithm>
 
 IMPLEMENT_CLASS(USkinnedMeshComponent, UMeshComponent)
+
+bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FHitResult& OutHit)
+{
+    float TMin, TMax;
+    if (!FRayUtils::IntersectRayAABB(Ray, GetWorldBoundingBox().Min, GetWorldBoundingBox().Max, TMin, TMax))
+        return false;
+    OutHit.Distance = TMin;
+    OutHit.HitComponent = this;
+    OutHit.WorldHitLocation = Ray.Origin + Ray.Direction * TMin;
+    return true;
+}
 
 void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
 {

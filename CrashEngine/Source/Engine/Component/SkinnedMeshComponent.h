@@ -12,6 +12,8 @@ public:
     USkinnedMeshComponent() = default;
     ~USkinnedMeshComponent() override = default;
 
+	bool LineTraceComponent(const FRay& Ray, FHitResult& OutHit) override;
+
     FMeshDataView GetMeshDataView() const override;
     void SetSkeletalMesh(USkeletalMesh* InMesh);
     USkeletalMesh* GetSkeletalMesh() const { return SkeletalMesh; }
