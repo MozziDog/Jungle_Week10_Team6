@@ -412,6 +412,7 @@ const FMatrix& USkinnedMeshComponent::GetBoneComponentMatrix(int32 BoneIndex) co
 
 FMatrix USkinnedMeshComponent::GetBoneWorldMatrix(int32 BoneIndex) const
 {
+	// Blender scaling convention
     return GetBoneComponentMatrix(BoneIndex) * FMatrix::MakeScaleMatrix(0.01f) * GetWorldMatrix();
 }
 
