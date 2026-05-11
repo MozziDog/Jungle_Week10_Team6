@@ -21,6 +21,30 @@ bool USkinnedMeshComponent::LineTraceComponent(const FRay& Ray, FHitResult& OutH
     OutHit.HitComponent = this;
     OutHit.WorldHitLocation = Ray.Origin + Ray.Direction * TMin;
     return true;
+
+	//for (uint32 i = 0; i < SkeletalMesh->GetSubMeshes().size(); i++)
+ //   {
+	//	const auto* SubMesh = SkeletalMesh->GetSubMeshes()[i];
+	//	if (!SubMesh) continue;
+
+	//	const FMatrix& WorldInverse = InverseBindMatrices[i];
+	//	FVector LocalOrigin = WorldInverse.TransformPositionWithW(Ray.Origin);
+ //       FVector LocalDirection = WorldInverse.TransformVector(Ray.Direction);
+ //       LocalDirection.Normalize();
+
+ //       // Use the mesh BVH as the fast component picking path.
+ //       if (SubMesh->RaycastMeshTrianglesWithBVHLocal(LocalOrigin, LocalDirection, OutHitResult))
+ //       {
+ //           const FVector LocalHitPoint = LocalOrigin + LocalDirection * OutHitResult.Distance;
+ //           const FVector WorldHitPoint = WorldMatrix.TransformPositionWithW(LocalHitPoint);
+ //           OutHitResult.Distance = FVector::Distance(Ray.Origin, WorldHitPoint);
+ //           OutHitResult.HitComponent = this;
+ //           return true;
+ //       }
+	//
+	//}
+
+	//return false;
 }
 
 void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
