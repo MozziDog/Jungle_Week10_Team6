@@ -1,4 +1,4 @@
-#include "Mesh/FBXImporter.h"
+﻿#include "Mesh/FBXImporter.h"
 #include "Mesh/SkeletalMesh.h"
 #include "Mesh/Skeleton.h"
 #include "Animation/AnimationSequence.h"
@@ -387,6 +387,14 @@ std::unique_ptr<FSkeletalSubMesh> FFBXImporter::ParseGeometry(FbxMesh* InFbxMesh
             VertexCount++;
         }
     }
+
+	FSkeletalMeshSection Section;
+    Section.MaterialSlotName = "Default";
+    Section.MaterialIndex = 0;
+    Section.FirstIndex = 0;
+    Section.NumTriangles = static_cast<uint32>(Result->Indices.size() / 3);
+    Result->Sections.push_back(Section);
+
     return Result;
 }
 
